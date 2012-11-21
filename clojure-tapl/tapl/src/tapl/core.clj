@@ -31,3 +31,47 @@
       (T t1)
       (T t2)
       (T t3))]))
+
+; 3.2 Arithmetic expressions (NB) (pp. 34 & 41)
+(defn NV [t]
+  (conde
+   [(== :zero t)]
+   [(fresh [nv]
+           (== [:succ nv] t)
+           (NV nv))]))
+(defn E [t tr]
+  (conde
+   [(fresh [t2 t3] ;E-IfTrue
+           (== [:if :true t2 t3] t)
+           (== t2 tr))]
+   [(fresh [t2 t3] ;E-IfFalse
+           (== [:if :false t2 t3] t)
+           (== t3 tr))]
+   [(fresh [t1 t2 t3 t1r] ;E-If
+           (== [:if t1 t2 t3] t)
+           (== [:if t1r t2 t3] tr)
+           (E t1 t1r))]
+   [(fresh [t1 t1r] ;E-Succ
+           (== [:succ t1] t)
+           (== [:succ t1r] tr)
+           (E t1 t1r))]
+   [(== [:pred :zero] t) ;E-PredZero
+    (== :zero tr)]
+   [(fresh [nv1] ;E-PredSucc
+           (== [:pred [:succ nv1]] t)
+           (== nv1 tr)
+           (NV nv1))]
+   [(fresh [t1 t1r] ; E-Pred
+           (== [:pred t1] t)
+           (== [:pred t1r] tr)
+           (E t1 t1r))]
+   [(== [:iszero :zero] t) ;E-IszeroZero
+    (== :true tr)]
+   [(fresh [nv1] ;E-IszeroSucc
+           (== [:iszero [:succ nv1]] t)
+           (== :false tr)
+           (NV nv1))]
+   [(fresh [t1 t1r] ;E-IsZero
+           (== [:iszero t1] t)
+           (== [:iszero t1r] tr)
+           (E t1 t1r))]))

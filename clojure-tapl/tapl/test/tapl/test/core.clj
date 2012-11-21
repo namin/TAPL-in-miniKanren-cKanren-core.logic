@@ -2,7 +2,7 @@
   (:use [tapl.core])
   (:refer-clojure :exclude [==])
   (:use [clojure.core.logic :exclude [is]])
-  (:use [clojure.core.match :only [match]])  
+  (:use [clojure.core.match :only [match]])
   (:use [clojure.test])
   )
 
@@ -25,7 +25,7 @@
   (is (= (run* [q] (T [:succ [:succ [:pred :false]]])) '(_.0)))
   (is (= (run* [q] (T [:succ [:succ [:pred :foo]]])) '()))
   (is (= (run* [q] (T [:if :false [:succ :zero] [:pred [:succ :zero]]])) '(_.0)))
-  (is (= (run* [q] (T [:if :false [:succ :foo] [:pred [:succ :zero]]])) '()))  
+  (is (= (run* [q] (T [:if :false [:succ :foo] [:pred [:succ :zero]]])) '()))
   (is (= (run 100 [q] (T q)))
       '(:true
         :false
@@ -128,3 +128,19 @@
         [:if :true :zero [:if :true :true :true]]
         [:succ [:if :true :true [:succ :false]]]))
   )
+
+(deftest test-NV
+  (is (= (run 3 [q] (NV q)) '(:zero [:succ :zero] [:succ [:succ :zero]]))))
+
+(deftest test-E
+  (is (= (run 1 [q] (E [:if :true :false :true] :false)) '(_.0)))
+  (is (= (run 1 [q] (E [:if :false :false :true] :true)) '(_.0)))
+  (is (= (run 1 [q] (E [:if [:if :false :true :false] :false :true] q))
+         '([:if :false :false :true])))
+  (is (= (run* [q] (E [:if q :false :true] :false)) '(:true)))
+  (is (= (run* [q] (E q :zero))
+         '([:if :true :zero _.0]
+           [:if :false _.0 :zero]
+           [:pred :zero]
+             [:pred [:succ :zero]])))
+  (is (= (run* [q] (E :zero q)) '())))
