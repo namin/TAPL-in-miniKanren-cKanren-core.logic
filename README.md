@@ -2,7 +2,7 @@ Reasoned TAPL
 =============
 
 -----------------------------------------------
-[namin]((http://github.com/namin)'s fork README
+[namin](http://github.com/namin)'s fork README
 -----------------------------------------------
 
 I forked this project in order to learn about cKanren/core.logic, and
