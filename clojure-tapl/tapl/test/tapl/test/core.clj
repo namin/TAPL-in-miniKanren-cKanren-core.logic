@@ -133,14 +133,25 @@
   (is (= (run 3 [q] (NV q)) '(:zero [:succ :zero] [:succ [:succ :zero]]))))
 
 (deftest test-E
-  (is (= (run 1 [q] (E [:if :true :false :true] :false)) '(_.0)))
-  (is (= (run 1 [q] (E [:if :false :false :true] :true)) '(_.0)))
-  (is (= (run 1 [q] (E [:if [:if :false :true :false] :false :true] q))
+  (is (= (run* [q] (E [:if :true :false :true] :false)) '(_.0)))
+  (is (= (run* [q] (E [:if :false :false :true] :true)) '(_.0)))
+  (is (= (run* [q] (E [:if [:if :false :true :false] :false :true] q))
          '([:if :false :false :true])))
   (is (= (run* [q] (E [:if q :false :true] :false)) '(:true)))
   (is (= (run* [q] (E q :zero))
          '([:if :true :zero _.0]
            [:if :false _.0 :zero]
            [:pred :zero]
-             [:pred [:succ :zero]])))
-  (is (= (run* [q] (E :zero q)) '())))
+           [:pred [:succ :zero]])))
+  (is (= (run* [q] (E :zero q)) '()))
+  (is (= (run* [q] (fresh (t1 t2 t3) (== [:if t1 t2 t3] q) (E q :zero)))
+         '([:if :true :zero _.0] [:if :false _.0 :zero]))))
+
+(deftest test-TC
+  (is (= (run* [q] (TC :true :Bool)) '(_.0)))
+  (is (= (run* [q] (TC [:iszero q] :Nat)) '()))
+  (is (= (run* [q] (TC [:succ q] :Bool)) '()))
+  (is (= (run* [q] (TC [:if :false :zero :true] q)) '())))
+
+(deftest test-E-TC
+  (is (= (run 1 [q] (fresh (t tr) (E t tr) (TC t :Bool) (TC tr q))) '(:Bool))))
