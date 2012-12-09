@@ -26,7 +26,7 @@ which should give you something like this:
 
     Williams-MacBook-Air:tapl webyrd$ lein repl
     REPL started; server listening on localhost port 3224
-    user=> 
+    user=>
 
 and then import tapl, core.logic, and core.match by tying (or pasting) this at the REPL:
 
@@ -34,13 +34,14 @@ and then import tapl, core.logic, and core.match by tying (or pasting) this at t
       (:use [tapl.core])
       (:refer-clojure :exclude [==])
       (:use [clojure.core.logic])
-      (:use [clojure.core.match :only [match]]))
+      (:use [clojure.core.match :only [match]])
+      (:require [clojure.pprint :as pp]))
 
 Now you should be ready to test the tapl code:
-      
+
     tapl-repl=> (run 10 [q] (T q))
     (:true :false :zero [:succ :true] [:succ :false] [:if :true :true :true] [:succ :zero] [:if :true :true :false] [:pred :true] [:if     :true :true :zero])
-    tapl-repl=> 
+    tapl-repl=>
 
 ## License
 
