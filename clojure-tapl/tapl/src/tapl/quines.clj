@@ -62,12 +62,12 @@
            (not-in-envo 'fn env)
            (== [:closure x body env] val))]))
 
-  (defn proper-listo [exp env val]
-    (conde
-     [(== '() exp)
-      (== '() val)]
-     [(fresh (a d t-a t-d)
-             (conso a d exp)
-             (conso t-a t-d val)
-             (eval-expo a env t-a)
-             (proper-listo d env t-d))]))
+(defn proper-listo [exp env val]
+  (conde
+   [(== '() exp)
+    (== '() val)]
+   [(fresh (a d t-a t-d)
+           (conso a d exp)
+           (conso t-a t-d val)
+           (eval-expo a env t-a)
+           (proper-listo d env t-d))]))
