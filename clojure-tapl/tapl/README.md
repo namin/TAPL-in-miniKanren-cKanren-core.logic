@@ -43,8 +43,24 @@ Now you should be ready to test the tapl code:
     (:true :false :zero [:succ :true] [:succ :false] [:if :true :true :true] [:succ :zero] [:if :true :true :false] [:pred :true] [:if     :true :true :zero])
     tapl-repl=>
 
+## Installing a snapshot of core.logic
+
+If Leiningen gives you the error _"It's possible the specified jar is
+not in any repository."_, you need to install a snapshot release of
+'core.logic'.
+
+This project relies on the master version of core.logic. Install it by
+downloading the sources somewhere:
+
+    git clone git://github.com/clojure/core.logic.git
+
+Then, from the 'core.logic' directory, run
+
+    lein test; lein install
+
 ## License
 
 Copyright (C) 2012 William E. Byrd
+Copyright (C) 2012 Nada Amin
 
 Distributed under the Eclipse Public License, the same as Clojure.
