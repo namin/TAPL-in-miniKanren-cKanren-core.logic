@@ -6,14 +6,14 @@
   (:use [clojure.test]))
 
 (deftest test-symbolo
-  (is (= (run* [q] (symbolo q)) '((_.0 :- clojure.core/symbol?))))
+  (is (= (run* [q] (symbolo q)) '((_0 :- clojure.core/symbol?))))
   (is (= (run* [q] (symbolo q) (== 'foo q)) '(foo)))
   (is (= (run* [q] (symbolo q) (== 5 q)) '()))
   (is (= (run* [q] (symbolo q) (== '(hello there) q)) '())))
 
 (deftest test-not-in-envo
-  (is (= (run* [q] (not-in-envo q '())) '(_.0)))
-  (is (= (run* [q] (not-in-envo 'x '([y v]))) '(_.0)))
+  (is (= (run* [q] (not-in-envo q '())) '(_0)))
+  (is (= (run* [q] (not-in-envo 'x '([y v]))) '(_0)))
   (is (= (run* [q] (not-in-envo 'x '([x v]))) '()))
   (is (= (run* [q] (not-in-envo 'x '([y v] [x v]))) '())))
 
@@ -29,9 +29,8 @@
   (is (= (run* [q] (eval-expo '((fn [x] x) (quote v)) '() q)) '(v))))
 
 (deftest test-quine
-  (is (= (map first (run 1 [q] (eval-expo q '() q)))
-         '(((fn [_.0] (list _.0 (list 'quote _.0)))
-            '(fn [_.0] (list _.0 (list 'quote _.0))))))))
+  (let [p (first (first (run 1 [q] (eval-expo q '() q))))]
+    (is (= p (eval p)))))
 
 (deftest test-twine
   (is (= (map first (run 1 [q] (fresh [x y]
@@ -39,7 +38,7 @@
                                       (eval-expo x '() y)
                                       (eval-expo y '() x)
                                       (== [x y] q))))
-         '(['((fn [_.0] (list 'quote (list _.0 (list 'quote _.0))))
-              '(fn [_.0] (list 'quote (list _.0 (list 'quote _.0)))))
-            ((fn [_.0] (list 'quote (list _.0 (list 'quote _.0))))
-             '(fn [_.0] (list 'quote (list _.0 (list 'quote _.0)))))]))))
+         '(['((fn [_0] (list 'quote (list _0 (list 'quote _0))))
+              '(fn [_0] (list 'quote (list _0 (list 'quote _0)))))
+            ((fn [_0] (list 'quote (list _0 (list 'quote _0))))
+             '(fn [_0] (list 'quote (list _0 (list 'quote _0)))))]))))
