@@ -30,7 +30,9 @@
 
 (deftest test-quine
   (let [p (first (first (run 1 [q] (eval-expo q '() q))))]
-    (is (= p (eval p)))))
+    (is (= p (eval p)))
+    (is (= p '((fn [_0] (list _0 (list 'quote _0)))
+               '(fn [_0] (list _0 (list 'quote _0))))))))
 
 (deftest test-twine
   (is (= (map first (run 1 [q] (fresh [x y]
