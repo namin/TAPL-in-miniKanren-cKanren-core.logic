@@ -48,7 +48,7 @@
 
 (defn listo [v]
   (conde
-    [(== v ())]
+    [(== v nil)]
     [(fresh [a d]
        (conso a d v)
        (listo d))]))
