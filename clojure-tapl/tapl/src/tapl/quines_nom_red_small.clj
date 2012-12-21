@@ -9,21 +9,22 @@
 (defn nomo [x]
   (predc x nom? `nom?))
 
+;;; NOTE(webyrd) The big difference between this version and
+;;; quines_nom.clj seems to be the expense (that is, large branching
+;;; factor) of substo.
+
+;;; NOTE(webyrd) I suspect list is more efficient than cons.
+
 (defn substo [e new a out]
   (conde
     [(== 'nil e) (== e out)]
     [(nomo e) (== a e) (== new out)]
-    [(nomo e)
-      (== e out)
-      (nom/hash a e)]
     [(fresh [v]
        (== `(~'quote ~v) e)
        (== `(~'quote ~v) out))]
-    [(fresh [first rest firstres restres]
-       (== `(~'cons ~first ~rest) e)
-       (== `(~'cons ~firstres ~restres) out)
-       (substo first new a firstres)
-       (substo rest new a restres))]
+    [(nomo e)
+      (== e out)
+      (nom/hash a e)]
     [(fresh [body bodyres]
        (nom/fresh [c]
          (== `(~'fn ~(nom/tie c body)) e)
@@ -35,16 +36,22 @@
        (== `(~rator ~rand) e)
        (== `(~ratorres ~randres) out)
        (substo rator new a ratorres)
-       (substo rand new a randres))]))
+       (substo rand new a randres))]
+    [(fresh [first rest firstres restres]
+       (== `(~'cons ~first ~rest) e)
+       (== `(~'cons ~firstres ~restres) out)
+       (substo first new a firstres)
+       (substo rest new a restres))]))
 
+;; NOTE(namin): Only handling close terms, so noms are not values.
 (defn valo [exp]
   (conde
     [(== exp 'nil)]
+    [(fresh [v]
+       (== exp `(~'quote ~v)))]
     [(fresh [body]
        (nom/fresh [x]
-         (== exp `(~'fn ~(nom/tie x body)))))]
-    [(fresh [v]
-       (== exp `(~'quote ~v)))]))
+         (== exp `(~'fn ~(nom/tie x body)))))]))
 
 (defn listo [v]
   (conde
@@ -56,11 +63,11 @@
 (defn valofo [exp v]
   (conde
     [(== exp 'nil) (== v exp)]
+    [(== exp `(~'quote ~v))]
     [(fresh [body]
        (nom/fresh [x]
-         (== exp `(~'fn ~(nom/tie x body)))
-         (== v exp)))]
-    [(== exp `(~'quote ~v))]))
+         (== v exp)
+         (== exp `(~'fn ~(nom/tie x body)))))]))
 
 (defn redo [exp out]
   (conde
@@ -75,27 +82,15 @@
        (redo rest restres))]
     [(fresh [first firstv rest restv v]
        (== `(~'cons ~first ~rest) exp)
+       (conde
+         [(== rest 'nil) (== restv nil)]
+         [(== rest `(~'quote ~restv)) (conso firstv restv v)])
+       (== `(~'quote ~v) out)
        (valo first)
        (valo rest)
-       (== rest 'nil)
-       (valofo first firstv)
-       (conso firstv nil v)
-       (== `(~'quote ~v) out))]
-    [(fresh [first firstv rest restv v]
-       (== `(~'cons ~first ~rest) exp)
-       (valo first)
-       (valo rest)
-       (== rest `(~'quote ~restv))
-       (listo restv)
        (valofo first firstv)
        (conso firstv restv v)
-       (== `(~'quote ~v) out))]
-    [(fresh [rator rand body]
-       (nom/fresh [a]
-         (== `(~rator ~rand) exp)
-         (== rator `(~'fn ~(nom/tie a body)))
-         (valo rand)
-         (substo body rand a out)))]
+       (listo restv))]
     [(fresh [rator rand ratorval]
        (nom/fresh [x]
          (== `(~rator ~rand) exp)
@@ -106,11 +101,26 @@
          (== `(~rator ~rand) exp)
          (== `(~rator ~randval) out)
          (valo rator)
-         (redo rand randval)))]))
+         (redo rand randval)))]
+    [(fresh [rator rand body]
+       (nom/fresh [a]
+         (== `(~rator ~rand) exp)
+         (== rator `(~'fn ~(nom/tie a body)))
+         (valo rand)
+         (substo body rand a out)))]))
 
+;; A canonical multistep reducer.
 (defn redo* [e1 e2]
+ (conde
+   [(valo e1) (valofo e1 e2)]
+   [(fresh [ep]
+      (redo e1 ep)
+      (redo* ep e2))]))
+
+;; An experimental multistep reducer which specializes in "true" quines, via (qredo* v `(~'quote ~v)).
+(defn qredo* [e1 e2]
   (conde
     [(redo e1 e2)]
     [(fresh [ep]
        (redo e1 ep)
-       (redo* ep e2))]))
+       (qredo* ep e2))]))
