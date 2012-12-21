@@ -6,7 +6,7 @@ Reasoned TAPL
 -----------------------------------------------
 
 I forked this project in order to learn about cKanren/core.logic, and
-stubornly see for myself their limitations in expressing type
+stubbornly see for myself their limitations in expressing type
 systems. I also intend to explore nominal logic programming à la
 αKanren.
 

@@ -58,6 +58,18 @@ Then, from the 'core.logic' directory, run
 
     lein test; lein install
 
+The _nom_ files use nominal unification, only available as a prototype
+in the
+[nominal-base](https://github.com/namin/core.logic/compare/master...nominal-base)
+branch of [namin/core.logic](https://github.com/namin/core.logic).
+
+    (ns quine-repl
+      (:use [tapl.quines_nom_red_small])
+      (:refer-clojure :exclude [==])
+      (:use [clojure.core.logic :exclude [is] :as l]
+            [clojure.core.logic.nominal :exclude [fresh hash] :as nom])
+      (:require [clojure.pprint :as pp]))
+
 ## License
 
 Copyright (C) 2012 William E. Byrd
