@@ -18,16 +18,16 @@
 
 (defn eval-expo [closure-nom exp env val]
   (conde
-   [(fresh (v)
-      (== `(~'quote ~v) exp)
-      (nom/hash closure-nom v)
-      (== v val))]
-   [(fresh (as)
-      (conso 'list as exp)
-      (nom/hash closure-nom as)
-      (proper-listo closure-nom as env val))]
+    [(fresh (v)
+       (== `(~'quote ~v) exp)
+       (nom/hash closure-nom v)
+       (== v val))]
+    [(fresh (as)
+       (conso 'list as exp)
+       (nom/hash closure-nom as)
+       (proper-listo closure-nom as env val))]
     [(nomo exp)
-      (lookupo exp env val)]
+     (lookupo exp env val)]
     [(fresh (rator rand body envc a)
        (nom/fresh [x]
          (== `(~rator ~rand) exp)
@@ -41,11 +41,11 @@
 
 (defn proper-listo [closure-nom exp env val]
   (conde
-   [(== '() exp)
-    (== '() val)]
+    [(== '() exp)
+     (== '() val)]
     [(fresh (a d t-a t-d)
-      (conso a d exp)
-      (conso t-a t-d val)
-      (eval-expo closure-nom a env t-a)
-      (proper-listo closure-nom d env t-d))]))
+       (conso a d exp)
+       (conso t-a t-d val)
+       (eval-expo closure-nom a env t-a)
+       (proper-listo closure-nom d env t-d))]))
 
