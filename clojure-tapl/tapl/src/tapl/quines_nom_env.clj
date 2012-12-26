@@ -4,9 +4,6 @@
         [clojure.core.logic.nominal :exclude [fresh hash] :as nom])
   (:require [clojure.pprint :as pp]))
 
-(defn nomo [x]
-  (predc x nom? `nom?))
-
 (defn lookupo [x env t]
   (fresh (y v rest)
          (conso [y v] rest env)
@@ -26,8 +23,7 @@
        (conso 'list as exp)
        (nom/hash closure-nom as)
        (proper-listo closure-nom as env val))]
-    [(nomo exp)
-     (lookupo exp env val)]
+    [(lookupo exp env val)]
     [(fresh (rator rand body envc a)
        (nom/fresh [x]
          (== `(~rator ~rand) exp)
