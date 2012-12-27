@@ -23,7 +23,7 @@
 
 (deftest test-omega-q
   (let [r (run 1 [q] (qredo* q q))
-         q (first (first r))]
+        q (first r)]
     (is (= q omega))))
 
 (deftest test-quine-accept-q
