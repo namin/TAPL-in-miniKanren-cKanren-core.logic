@@ -7,7 +7,7 @@
   (:require [clojure.pprint :as pp]))
 
 (deftest test-quine
-  (let [p (first (first (run 1 [q] (eval-expo q '() q))))
+  (let [p (first (run 1 [q] (eval-expo q '() q)))
         p (read-string (prn-str p))]
     (is (= p (eval p)))
     (is (= p '((fn [a_0] (list a_0 (list (quote quote) a_0)))
