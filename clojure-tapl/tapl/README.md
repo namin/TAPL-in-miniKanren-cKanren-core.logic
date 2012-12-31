@@ -58,10 +58,8 @@ Then, from the 'core.logic' directory, run
 
     lein test; lein install
 
-The _nom_ files use nominal unification, only available as a prototype
-in the
-[nominal-base](https://github.com/namin/core.logic/compare/master...nominal-base)
-branch of [namin/core.logic](https://github.com/namin/core.logic).
+Nominal unificationThe _nom_ files use nominal, available in the
+`core.logic.nominal` package:
 
     (ns quine-repl
       (:use [tapl.quines_nom_red_small])
