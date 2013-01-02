@@ -58,10 +58,10 @@ Then, from the 'core.logic' directory, run
 
     lein test; lein install
 
-Nominal unificationThe _nom_ files use nominal, available in the
-`core.logic.nominal` package:
+Some files use nominal unification available in the
+`core.logic.nominal` package. For example:
 
-    (ns quine-repl
+    (ns tapl-nom-repl
       (:use [tapl.quines_nom_red_small])
       (:refer-clojure :exclude [==])
       (:use [clojure.core.logic :exclude [is] :as l]
