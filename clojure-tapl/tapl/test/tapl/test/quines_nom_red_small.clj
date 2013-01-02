@@ -1,10 +1,9 @@
 (ns tapl.test.quines_nom_red_small
   (:use [tapl.quines_nom_red_small]
-        :reload)
+        clojure.test :reload)
   (:refer-clojure :exclude [==])
   (:use [clojure.core.logic :exclude [is] :as l]
-        [clojure.core.logic.nominal :exclude [fresh hash] :as nom]
-        clojure.test :reload)
+        [clojure.core.logic.nominal :exclude [fresh hash] :as nom])
   (:require [clojure.pprint :as pp]))
 
 (def omega [['fn (nom/tie 'a_0 '(a_0 a_0))] ['fn (nom/tie 'a_1 '(a_1 a_1))]])

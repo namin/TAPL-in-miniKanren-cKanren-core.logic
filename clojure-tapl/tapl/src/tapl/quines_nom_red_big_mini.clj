@@ -1,8 +1,7 @@
 (ns tapl.quines_nom_red_big_mini
   (:refer-clojure :exclude [==])
   (:use [clojure.core.logic :exclude [is] :as l]
-        [clojure.core.logic.nominal :exclude [fresh hash] :as nom]
-        clojure.test :reload)
+        [clojure.core.logic.nominal :exclude [fresh hash] :as nom])
   (:require [clojure.pprint :as pp])
   (:import [java.io Writer]))
 
