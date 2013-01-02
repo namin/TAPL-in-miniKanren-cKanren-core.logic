@@ -17,7 +17,7 @@
             (nom/fresh [a]
               (== q (quine a))
               (redo* q q)))
-        q (first (first r))
+        q (first r)
         p (read-string (prn-str q))]
     (is (= p (eval p)))))
 
@@ -31,6 +31,6 @@
             (nom/fresh [a]
               (== q (quine a))
               (qredo* q `(~'quote ~q))))
-        q (first (first r))
+        q (first r)
         p (read-string (prn-str q))]
     (is (= p (eval p)))))

@@ -13,6 +13,6 @@
               (== q `((~'fn ~(nom/tie a `(~'list ~a (~'list (~'quote ~'quote) ~a))))
                        (~'quote (~'fn ~(nom/tie a `(~'list ~a (~'list (~'quote ~'quote) ~a)))))))
               (evalo q q)))
-        q (first (first r))
+        q (first r)
         p (read-string (prn-str q))]
     (is (= p (eval p)))))
