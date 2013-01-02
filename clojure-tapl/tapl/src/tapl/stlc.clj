@@ -16,11 +16,11 @@
     ;; abstraction
     [(fresh [t1]
        (nom/fresh [x]
-         (== t [:lam (nom/tie x t1)])
+         (== t `(~'fn ~(nom/tie x t1)))
          (termo t1)))]
     ;; application
     [(fresh [t1 t2]
-       (== t [t1 t2])
+       (== t `(~t1 ~t2))
        (termo t1)
        (termo t2))]))
 
@@ -28,7 +28,7 @@
   ;; abstraction
   (fresh [t1]
     (nom/fresh [x]
-      (== t [:lam (nom/tie x t1)])
+      (== t `(~'fn ~(nom/tie x t1)))
       (termo t1))))
 
 (defn substo [x v t out]
@@ -37,14 +37,14 @@
     [(nomo t) (== t out) (nom/hash x t)]
     [(fresh [t1 t1r]
        (nom/fresh [y]
-         (== t [:lam (nom/tie y t1)])
-         (== t [:lam (nom/tie y t1r)])
+         (== t `(~'fn ~(nom/tie y t1)))
+         (== t `(~'fn ~(nom/tie y t1r)))
          (nom/hash y x)
          (nom/hash y v)
          (substo x v t1 t1r)))]
     [(fresh [t1 t2 t1r t2r]
-       (== t [t1 t2])
-       (== out [t1r t2r])
+       (== t `(~t1 ~t2))
+       (== out `(~t1r ~t2r))
        (substo x v t1 t1r)
        (substo x v t2 t2r))]))
 
@@ -52,22 +52,22 @@
   (conde
     ;; E-App1
     [(fresh [t1 t2 t1p]
-       (== t [t1 t2])
-       (== tp [t1p t2])
+       (== t `(~t1 ~t2))
+       (== tp `(~t1p ~t2))
        (termo t1)
        (termo t2)
        (redo t1 t1p))]
     ;; E-App2
     [(fresh [v1 t2 t2p]
-       (== t [v1 t2])
-       (== tp [v1 t2p])
+       (== t `(~v1 ~t2))
+       (== tp `(~v1 ~t2p))
        (valo v1)
        (termo t2)
        (redo t2 t2p))]
     ;; E-AppAbs
     [(fresh [t12 v2]
        (nom/fresh [x]
-         (== t [[:lam (nom/tie x t12)] v2])
+         (== t `((~'fn ~(nom/tie x t12)) ~v2))
          (valo v2)
          (termo t12)
          (substo x v2 t12 tp)))]))
@@ -93,13 +93,13 @@
     ;; T-Abs
     [(fresh [gammax ty1 ty2 t2]
        (nom/fresh [x]
-         (== t [:lam (nom/tie x t2)])
+         (== t `(~'fn ~(nom/tie x t2)))
          (== ty [:=> ty1 ty2])
          (conso [x ty1] gamma gammax)
          (typingo gammax t2 ty2)))]
     ;; T-App
     [(fresh [ty11 ty12 t1 t2]
-       (== t [t1 t2])
+       (== t `(~t1 ~t2))
        (== ty ty12)
        (typingo gamma t2 ty11)
        (typingo gamma t1 [:=> ty11 ty12]))]))
