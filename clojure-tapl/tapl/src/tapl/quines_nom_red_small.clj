@@ -53,7 +53,7 @@
          (== exp `(~'fn ~(nom/tie x body)))))]))
 
 (defn listo [v]
-  (predc list? `list?))
+  (predc v #(seq? %) `list?))
 
 (defn valofo [exp v]
   (conde
