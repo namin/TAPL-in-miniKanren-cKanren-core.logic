@@ -12,3 +12,19 @@
     (is (= p (eval p)))
     (is (= p '((fn [a_0] (list a_0 (list (quote quote) a_0)))
                 (quote (fn [a_0] (list a_0 (list (quote quote) a_0)))))))))
+
+(deftest test-twine
+  (let [[x y] (first
+                (run 1 [q]
+                  (fresh [x y]
+                    (nom/fresh [closure-nom]
+                      ;; TODO(namin): if we move the inequality here, then the result is wrong.
+                      (eval-expo closure-nom x '() y)
+                      (eval-expo closure-nom y '() x)
+                      (!= x y)
+                      (== [x y] q)))))
+        x (read-string (prn-str x))
+        y (read-string (prn-str y))]
+    (is (not (= x y)))
+    (is (= (eval x) y))
+    (is (= (eval y) x))))
