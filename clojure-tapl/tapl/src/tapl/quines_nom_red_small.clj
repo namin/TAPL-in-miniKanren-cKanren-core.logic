@@ -16,7 +16,7 @@
 
 (defn substo [e new a out]
   (conde
-    [(== 'nil e) (== e out)]
+    [(== () e) (== e out)]
     [(nomo e) (== a e) (== new out)]
     [(fresh [v]
        (== `(~'quote ~v) e)
@@ -45,7 +45,7 @@
 ;; NOTE(namin): Only handling close terms, so noms are not values.
 (defn valo [exp]
   (conde
-    [(== exp 'nil)]
+    [(== exp ())]
     [(fresh [v]
        (== exp `(~'quote ~v)))]
     [(fresh [body]
@@ -53,15 +53,11 @@
          (== exp `(~'fn ~(nom/tie x body)))))]))
 
 (defn listo [v]
-  (conde
-    [(== v nil)]
-    [(fresh [a d]
-       (conso a d v)
-       (listo d))]))
+  (predc list? `list?))
 
 (defn valofo [exp v]
   (conde
-    [(== exp 'nil) (== v exp)]
+    [(== exp ()) (== v ())]
     [(== exp `(~'quote ~v))]
     [(fresh [body]
        (nom/fresh [x]
@@ -82,7 +78,7 @@
     [(fresh [first firstv rest restv v]
        (== `(~'cons ~first ~rest) exp)
        (conde
-         [(== rest 'nil) (== restv nil)]
+         [(== rest ()) (== restv ())]
          [(== rest `(~'quote ~restv)) (conso firstv restv v)])
        (== `(~'quote ~v) out)
        (valo first)
