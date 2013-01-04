@@ -53,7 +53,7 @@
          (== exp `(~'fn ~(nom/tie x body)))))]))
 
 (defn listo [v]
-  (predc list? `list?))
+  (predc v list? `list?))
 
 (defn valofo [exp v]
   (conde
@@ -77,13 +77,11 @@
        (redo rest restres))]
     [(fresh [first firstv rest restv v]
        (== `(~'cons ~first ~rest) exp)
-       (conde
-         [(== rest ()) (== restv ())]
-         [(== rest `(~'quote ~restv)) (conso firstv restv v)])
        (== `(~'quote ~v) out)
        (valo first)
        (valo rest)
        (valofo first firstv)
+       (valofo rest restv)
        (conso firstv restv v)
        (listo restv))]
     [(fresh [rator rand ratorval]

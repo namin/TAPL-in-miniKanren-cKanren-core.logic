@@ -48,6 +48,11 @@
 
 (deftest test-no-improper-listo
   (is (= (run* [q]
-           (nom/fresh [a b]
-             (redo* `(~'cons (~'quote 1) (~'quote 2)) q)))
+           (redo* `(~'cons (~'quote 1) (~'quote 2)) q))
         ())))
+
+(deftest test-proper-listo
+  (is (= (run* [q]
+           (nom/fresh [a b]
+             (redo* `(~'cons (~'quote 1) ()) q)))
+        ((1)))))
