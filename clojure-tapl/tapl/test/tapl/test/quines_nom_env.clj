@@ -18,10 +18,9 @@
                 (run 1 [q]
                   (fresh [x y]
                     (nom/fresh [closure-nom]
-                      ;; TODO(namin): if we move the inequality here, then the result is wrong.
+                      (!= x y)
                       (eval-expo closure-nom x '() y)
                       (eval-expo closure-nom y '() x)
-                      (!= x y)
                       (== [x y] q)))))
         x (read-string (prn-str x))
         y (read-string (prn-str y))]
