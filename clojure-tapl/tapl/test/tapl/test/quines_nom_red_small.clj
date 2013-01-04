@@ -55,4 +55,4 @@
   (is (= (run* [q]
            (nom/fresh [a b]
              (redo* `(~'cons (~'quote 1) ()) q)))
-        ((1)))))
+        '((1)))))
