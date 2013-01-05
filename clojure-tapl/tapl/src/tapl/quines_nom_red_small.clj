@@ -52,8 +52,15 @@
        (nom/fresh [x]
          (== exp `(~'fn ~(nom/tie x body)))))]))
 
-(defn listo [v]
-  (predc v seq? `seq?))
+(defn seqc [v]
+  (fixc v
+    (fn [t _ _]
+      (cond
+        (sequential? t) succeed
+        (lcons? t) (seqc (lnext t))
+        :else fail))
+    (fn [_ v _ r a]
+      `(~'seqc ~(-reify a v r)))))
 
 (defn valofo [exp v]
   (conde
@@ -83,7 +90,7 @@
        (valofo first firstv)
        (valofo rest restv)
        (conso firstv restv v)
-       (listo restv))]
+       (seqc restv))]
     [(fresh [rator rand ratorval]
        (nom/fresh [x]
          (== `(~rator ~rand) exp)
