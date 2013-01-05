@@ -132,3 +132,11 @@
     [(fresh [ep]
        (redo e1 ep)
        (qredo* ep e2))]))
+
+(defn tqredo* [e1 e2]
+  (conde
+    [(redo e1 e2)]
+    [(fresh [ep]
+       (redo e1 ep)
+       (tqredo* ep e2))]))
+
