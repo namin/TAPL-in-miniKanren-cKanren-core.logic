@@ -117,6 +117,14 @@
       (redo e1 ep)
       (redo* ep e2))]))
 
+(def tredo*
+  (tabled [e1 e2]
+     (conde
+       [(valo e1) (valofo e1 e2)]
+       [(fresh [ep]
+          (redo e1 ep)
+          (tredo* ep e2))])))
+
 ;; An experimental multistep reducer which specializes in "true" quines, via (qredo* v `(~'quote ~v)).
 (defn qredo* [e1 e2]
   (conde
