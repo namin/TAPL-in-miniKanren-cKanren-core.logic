@@ -52,8 +52,15 @@
        (nom/fresh [x]
          (== exp `(~'fn ~(nom/tie x body)))))]))
 
-(defn listo [v]
-  (predc v seq? `seq?))
+(defn seqc [v]
+  (fixc v
+    (fn [t _ _]
+      (cond
+        (sequential? t) succeed
+        (lcons? t) (seqc (lnext t))
+        :else fail))
+    (fn [_ v _ r a]
+      `(~'seqc ~(-reify a v r)))))
 
 (defn valofo [exp v]
   (conde
@@ -83,7 +90,7 @@
        (valofo first firstv)
        (valofo rest restv)
        (conso firstv restv v)
-       (listo restv))]
+       (seqc restv))]
     [(fresh [rator rand ratorval]
        (nom/fresh [x]
          (== `(~rator ~rand) exp)
@@ -110,6 +117,14 @@
       (redo e1 ep)
       (redo* ep e2))]))
 
+(def tredo*
+  (tabled [e1 e2]
+     (conde
+       [(valo e1) (valofo e1 e2)]
+       [(fresh [ep]
+          (redo e1 ep)
+          (tredo* ep e2))])))
+
 ;; An experimental multistep reducer which specializes in "true" quines, via (qredo* v `(~'quote ~v)).
 (defn qredo* [e1 e2]
   (conde
@@ -117,3 +132,11 @@
     [(fresh [ep]
        (redo e1 ep)
        (qredo* ep e2))]))
+
+(defn tqredo* [e1 e2]
+  (conde
+    [(redo e1 e2)]
+    [(fresh [ep]
+       (redo e1 ep)
+       (tqredo* ep e2))]))
+

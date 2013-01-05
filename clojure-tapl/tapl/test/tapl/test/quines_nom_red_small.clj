@@ -56,3 +56,11 @@
            (nom/fresh [a b]
              (redo* `(~'cons (~'quote 1) ()) q)))
         '((1)))))
+
+(deftest test-step
+  (is (= (run* [q]
+           (nom/fresh [a]
+             (fresh [p]
+               (redo [['fn (nom/tie a ['cons a a])] ['cons ['quote 1] ()]] p)
+               (redo* p q))))
+         '(((1) 1)))))
