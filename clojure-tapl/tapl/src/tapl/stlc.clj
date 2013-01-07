@@ -84,7 +84,7 @@
     (conso [y tyy] gammap gamma)
     (conde
       [(== y x) (== tyy ty)]
-      [(nom/hash y x) (lookupo gammap x ty)])))
+      [(!= y x) (lookupo gammap x ty)])))
 
 (defn typingo [gamma t ty]
   (conde

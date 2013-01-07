@@ -23,7 +23,7 @@
        (== `(~'quote ~v) out))]
     [(nomo e)
       (== e out)
-      (nom/hash a e)]
+      (!= a e)]
     [(fresh [body bodyres]
        (nom/fresh [c]
          (== `(~'fn ~(nom/tie c body)) e)

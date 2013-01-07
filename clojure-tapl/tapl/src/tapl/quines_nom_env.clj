@@ -12,7 +12,7 @@
          (conso [y v] rest env)
          (conde
           ((== y x) (== v t))
-          ((nom/hash y x) (lookupo x rest t)))))
+          ((!= y x) (lookupo x rest t)))))
 
 (declare proper-listo)
 

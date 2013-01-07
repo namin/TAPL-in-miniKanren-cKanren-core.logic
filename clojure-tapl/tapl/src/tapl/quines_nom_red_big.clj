@@ -15,7 +15,7 @@
     [(nomo e) (== a e) (== new out)]
     [(nomo e)
       (== e out)
-      (nom/hash a e)]
+      (!= a e)]
     [(fresh [v]
        (== `(~'quote ~v) e)
        (== `(~'quote ~v) out))]
