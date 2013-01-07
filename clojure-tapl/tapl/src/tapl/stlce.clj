@@ -87,8 +87,6 @@
        (conso [y tyy] gammap gamma)
        (conde
          [(== y x) (== tyb `(~'type ~tyy))]
-         ;; TODO(namin): we get spurious results if we use nom/hash instead of !=.
-         ;;  This indicates a potential problem with nom/hash and variable noms.
          [(!= y x) (lookupo gammap x tyb)]))]))
 
 (defn typingo [gamma t tyb]

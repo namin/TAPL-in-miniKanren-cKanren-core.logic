@@ -19,8 +19,7 @@
            (nom/fresh [x]
              (typingo () `(~'fn ~(nom/tie x [x x])) q)))
         '(((error (not-arrow-type _0)) :- (!= (_0 [:=> _1 _2])))
-          ;; TODO(namin): The != below is spurious b/c of occurs-check. Is it worth fixing?
-          ((error (incompatible-types _0 [:=> _0 _1])) :- (!= (_0 [:=> _0 _1])))))))
+          (error (incompatible-types _0 [:=> _0 _1]))))))
 
 (deftest test-typingo-unbound-var
   (is (= (run* [q]
