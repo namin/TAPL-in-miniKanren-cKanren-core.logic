@@ -122,11 +122,11 @@
              [(== ty1 [:=> ty11 ty12])
                (conde
                  [(!= ty11 ty2)
-                   (== tyb `(~'error (~'incompatible-types ~ty11 ~ty2)))]
+                  (== tyb `(~'error (~'incompatible-types ~ty11 ~ty2)))]
                  [(== ty11 ty2)
                   (== tyb `(~'type ~ty12))])])]
          [(== tyb1 `(~'error ~msg))
           (== tyb tyb1)]
          [(== tyb2 `(~'error ~msg))
           (== tyb1 `(~'type ~ty1))
-           (== tyb tyb2)]))]))
+          (== tyb tyb2)]))]))
