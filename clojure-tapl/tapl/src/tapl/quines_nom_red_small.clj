@@ -52,16 +52,6 @@
        (nom/fresh [x]
          (== exp `(~'fn ~(nom/tie x body)))))]))
 
-(defn seqc [v]
-  (fixc v
-    (fn [t _ _]
-      (cond
-        (sequential? t) succeed
-        (lcons? t) (seqc (lnext t))
-        :else fail))
-    (fn [_ v _ r a]
-      `(~'seqc ~(-reify a v r)))))
-
 (defn valofo [exp v]
   (conde
     [(== exp ()) (== v ())]
