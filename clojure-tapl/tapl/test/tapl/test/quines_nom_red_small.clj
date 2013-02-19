@@ -35,6 +35,9 @@
     (is (= p (eval p)))))
 
 (deftest test-no-listo-looping
+  ;; NOTE(namin): going to higher runs causes things like
+  ;; (== p1 `(~'cons (~'fn ~(nom/tie a a)) (~'quote ((~'fn ~(nom/tie b b))))))
+  ;; for which the eval test is NOT true.
   (let [r (run 4 [q]
             (fresh [p1 p2]
               (nom/fresh [a b]
