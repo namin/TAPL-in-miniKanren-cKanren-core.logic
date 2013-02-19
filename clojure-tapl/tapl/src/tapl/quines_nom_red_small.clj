@@ -72,16 +72,14 @@
        (== `(~'cons ~first ~rest) exp)
        (== `(~'cons ~firstres ~rest) out)
        (redo first firstres))]
-    [(fresh [first rest restres]
+    [(fresh [first firstv rest restres]
        (== `(~'cons ~first ~rest) exp)
        (== `(~'cons ~first ~restres) out)
-       (valo first)
+       (qvalofo first firstv)
        (redo rest restres))]
     [(fresh [first firstv rest restv v]
        (== `(~'cons ~first ~rest) exp)
        (== `(~'quote ~v) out)
-       (valo first)
-       (valo rest)
        (qvalofo first firstv)
        (qvalofo rest restv)
        (conso firstv restv v)
