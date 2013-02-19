@@ -61,6 +61,12 @@
             (nom/fresh [x]
               (== v exp)
               (== exp `(~'fn ~(nom/tie x body)))))]))]
+    [(fresh [exp v]
+       (== head ['qvalofo exp v])
+       (== tail ())
+       (conde
+         [(== exp ()) (== v ())]
+         [(== exp `(~'quote ~v))]))]
     [(fresh [exp out]
        (== head ['redo exp out])
        (conde
@@ -78,8 +84,8 @@
              (== `(~'quote ~v) out)
              (== tail [['valo first]
                        ['valo rest]
-                       ['valofo first firstv]
-                       ['valofo rest restv]])
+                       ['qvalofo first firstv]
+                       ['qvalofo rest restv]])
              (conso firstv restv v)
              (seqc restv))]
           [(fresh [rator rand ratorval]

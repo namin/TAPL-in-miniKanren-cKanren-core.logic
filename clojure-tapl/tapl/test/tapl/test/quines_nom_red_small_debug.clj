@@ -16,6 +16,7 @@
   (is (< 0 (count (run* [q] (fresh [o] (fresh [e new a out] (quines-debug-so ['substo e new a out] 2 o) (== q [['substo e new a out] o])))))))
   (is (< 0 (count (run* [q] (fresh [o] (fresh [exp] (quines-debug-so ['valo exp] 2 o) (== q [exp o])))))))
   (is (< 0 (count (run* [q] (fresh [o] (fresh [exp v] (quines-debug-so ['valofo exp v] 2 o) (== q [['valofo exp v] o])))))))
+  (is (< 0 (count (run* [q] (fresh [o] (fresh [exp v] (quines-debug-so ['qvalofo exp v] 2 o) (== q [['qvalofo exp v] o])))))))
   (is (< 0 (count (run* [q] (fresh [o] (fresh [exp out] (quines-debug-so ['redo exp out] 2 o) (== q [['redo exp out] o])))))))
   (is (< 0 (count (run* [q] (fresh [o] (fresh [e1 e2] (quines-debug-so ['redo* e1 e2] 2 o) (== q [['redo* e1 e2] o])))))))
   (is (< 0 (count (run* [q] (fresh [o] (fresh [e1 e2] (quines-debug-so ['qredo* e1 e2] 2 o) (== q [['qredo* e1 e2] o]))))))))
@@ -42,6 +43,18 @@
         q (first r)
         p (read-string (prn-str q))]
     (is (= p (eval p)))))
+
+(deftest test-no-listo-looping
+  (let [r (run 4 [q]
+            (fresh [p1 p2]
+              (nom/fresh [a b]
+                (== p2 `((~'fn ~(nom/tie a a)) (~'fn ~(nom/tie b b))))
+                (quines-debug-so ['redo* p1 p2] 100 'no-overflow)
+                (== q [p1 p2]))))]
+    (doseq [q r]
+      (let [p1 (read-string (prn-str (first q)))
+            p2 (read-string (prn-str (second q)))]
+        (is (= (eval p1) p2))))))
 
 (deftest test-no-improper-listo
   (is (= (run* [q]
