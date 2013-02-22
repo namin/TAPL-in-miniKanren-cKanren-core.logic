@@ -24,8 +24,7 @@
        (fresh [case1 case2 ty11 ty12 t1 t2]
          (== t `(~t1 ~t2))
          (== ty ty12)
-         (== tail [['typingo case2 gamma t2 ty11]
-                   ['typingo case1 gamma t1 [:=> ty11 ty12]]]))])))
+         (== tail [['typingo case1 gamma t1 [:=> ty11 ty12]]
+                   ['typingo case2 gamma t2 ty11]]))])))
 
 (def typingo-deriv (solve-proof-for typingo-clause))
-

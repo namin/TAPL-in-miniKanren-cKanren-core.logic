@@ -15,8 +15,17 @@
                    (typingo-deriv ['typingo c () `(~'fn ~(nom/tie x x)) t] d)
                    (== q [c t d]))))))
         '([T-Abs [:=> _0 _0] ([[typingo T-Abs () (fn  [a_1] a_1) [:=> _0 _0]] <-- ([[typingo T-Var ([a_2 _0]) a_2 _0] <-- ()])])])))
+  (is (= (read-string
+           (prn-str
+             (run* [q]
+               (fresh [c t d]
+                 (nom/fresh [x]
+                   (typingo-deriv ['typingo c () `((~'fn ~(nom/tie x x)) (~'fn ~(nom/tie x x))) t] d)
+                   (== q [c t d]))))))
+        '([T-App [:=> _0 _0] ([[typingo T-App () ((fn [a_1] a_1) (fn [a_1] a_1)) [:=> _0 _0]] <-- ([[typingo T-Abs () (fn [a_1] a_1) [:=> [:=> _0 _0] [:=> _0 _0]]] <-- ([[typingo T-Var ([a_2 [:=> _0 _0]]) a_2 [:=> _0 _0]] <-- ()])] [[typingo T-Abs () (fn [a_1] a_1) [:=> _0 _0]] <-- ([[typingo T-Var ([a_3 _0]) a_3 _0] <-- ()])])])])))
   (is (= (run* [q]
            (fresh [c t d]
              (nom/fresh [x]
                (typingo-deriv ['typingo c () `(~'fn ~(nom/tie x [x x])) t] d))))
         ())))
+
