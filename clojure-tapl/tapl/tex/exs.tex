@@ -1,0 +1,37 @@
+% Examples are obtained by running
+% lein run -m tapl.stlc_deriv_tex
+
+\documentclass{beamer}
+
+% STLC
+\newcommand{\typ}[3]{#1 \vdash #2 : #3}
+\newcommand{\fn}[2]{(\lambda{#1}.#2)}
+\newcommand{\app}[2]{(#1\;#2)}
+\newcommand{\arr}[2]{(#1\Rightarrow{#2})}
+\newcommand{\env}[1]{[#1]}
+\newcommand{\bind}[2]{#1 \mapsto #2}
+
+\usepackage{prooftree}
+
+\useoutertheme{infolines}
+\setbeamertemplate{headline}{}
+\setbeamertemplate{footline}{}
+\setbeamertemplate{navigation symbols}{}
+
+\begin{document}
+
+\begin{frame}{STLC type derivation tree (1)}
+\begin{center}
+\input{ex1}
+\end{center}
+\end{frame}
+
+\begin{frame}{STLC type derivation tree (2)}
+\begin{center}
+{\tiny
+\input{ex2}
+}
+\end{center}
+\end{frame}
+
+\end{document}
