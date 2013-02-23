@@ -65,20 +65,25 @@
 
 ;; Adapted from logically.art.interpreters.meta/solve-proof-for.
 (defn debug-proof-for [clause]
-  (letfn [(solve0 [goal tree]
-            (solve [goal] tree))
-          (solve [goals tree]
+  (letfn [(solve0 [goal tree ok]
+            (all
+              (solve [goal] tree ok)
+              (conda
+                [(== ok true)]
+                [(== ok false)])))
+          (solve [goals tree ok]
             (conde
               [(== goals ())
                (== tree ())]
-              [(fresh [g gs ts b tb]
+              [(fresh [g gs ts b tb ehead etail]
                  (conso g gs goals)
                  (conda
                    [(clause g b)
                     (conso [g '<-- tb] ts tree)
-                    (solve b tb)]
-                   [(conso [g 'error] ts tree)])
-                 (solve gs ts))]))]
+                    (solve b tb ok)]
+                   [(conso [g 'error] ts tree)
+                    (== ok false)])
+                 (solve gs ts ok))]))]
     solve0))
 
 (def typingo-only-debug (debug-proof-for typingo-clause))
