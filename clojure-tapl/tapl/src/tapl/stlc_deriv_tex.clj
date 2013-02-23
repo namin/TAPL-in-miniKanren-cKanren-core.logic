@@ -94,23 +94,30 @@
           (print "\\justifies ")
           (tex-stlc-typ c)
           (println "")
-          (println "\\using \\textsc{" (typ-case c) "}"))
+          (print "\\using ")
+          (when (not r)
+            (print "\\err{"))
+          (print "\\textsc{" (typ-case c) "}")
+          (when (not r)
+            (print "}"))
+          (println ""))
         r)
       (do
         (cond
           (= (first c) 'lookupo)
-          (println "\\text{unbound variable } " (nth c 2))
+          (println "\\err{\\text{unbound variable } " (nth c 2) "}")
           (= (first c) '==)
           (do
+            (println "\\err{")
             (tex-stlc-type (nth c 1))
             (print " \\neq ")
             (tex-stlc-type (nth c 2))
-            (println ""))
+            (println "}"))
           (= (first c) 'typingo)
           (do
-            (print "\\text{no case for } ")
+            (print "\\err{\\text{no case for } ")
             (tex-stlc-typ c)
-            (println "")))
+            (println "}")))
         false))))
 
 (defn tex-stlc-proof-tree-sub [d]

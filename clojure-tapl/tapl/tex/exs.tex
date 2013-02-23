@@ -11,6 +11,9 @@
 \newcommand{\env}[1]{[#1]}
 \newcommand{\bind}[2]{#1 \mapsto #2}
 
+\usepackage{color}
+\newcommand{\err}[1]{{\color{red} #1}}
+
 \usepackage{prooftree}
 
 \useoutertheme{infolines}
@@ -22,7 +25,9 @@
 
 \begin{frame}{STLC type derivation tree (1)}
 \begin{center}
+{\tiny
 \input{ex1}
+}
 \end{center}
 \end{frame}
 
