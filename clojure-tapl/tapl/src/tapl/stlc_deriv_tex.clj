@@ -7,6 +7,8 @@
         [clojure.core.logic.nominal :exclude [fresh hash] :as nom])
   (:require [clojure.pprint :as pp]))
 
+(defn typ-rule [c]
+  (= (first c) 'typingo))
 (defn typ-case [c]
   (second c))
 (defn typ-env [c]
@@ -17,6 +19,8 @@
   (nth c 4))
 (defn proof-head [d]
   (first d))
+(defn proof-head-ok [d]
+  (not (= (second d) 'error)))
 (defn proof-tail [d]
   (nth d 2))
 
@@ -56,7 +60,9 @@
       (tex-stlc-term (first c))
       (print " ")
       (tex-stlc-term (second c))
-      (print "}"))))
+      (print "}"))
+    :else
+    (print "{" c "}")))
 
 (defn tex-stlc-env [e]
   (print "{\\env{")
@@ -69,26 +75,49 @@
     (print "\\;"))
   (print "}}"))
 
+(defn tex-stlc-typ [c]
+  (print "\\typ ")
+  (tex-stlc-env (typ-env c))
+  (print " ")
+  (tex-stlc-term (typ-term c))
+  (print " ")
+  (tex-stlc-type (typ-type c)))
+
 (declare tex-stlc-proof-tree-sub)
 
 (defn tex-stlc-proof-tree-one [d]
-  (let [c (proof-head d)
-        tail (proof-tail d)]
-    (doseq [other tail]
-      (tex-stlc-proof-tree-sub other))
-    (print "\\justifies \\typ ")
-    (tex-stlc-env (typ-env c))
-    (print " ")
-    (tex-stlc-term (typ-term c))
-    (print " ")
-    (tex-stlc-type (typ-type c))
-    (println "")
-    (println "\\using \\textsc{" (typ-case c) "}")))
+  (let [c (proof-head d)]
+    (if (proof-head-ok d)
+      (let [tail (proof-tail d)
+            r (every? (fn [x] x) (map (fn [other] (tex-stlc-proof-tree-sub other)) tail))]
+        (when (typ-rule c)
+          (print "\\justifies ")
+          (tex-stlc-typ c)
+          (println "")
+          (println "\\using \\textsc{" (typ-case c) "}"))
+        r)
+      (do
+        (cond
+          (= (first c) 'lookupo)
+          (println "\\text{unbound variable } " (nth c 2))
+          (= (first c) '==)
+          (do
+            (tex-stlc-type (nth c 1))
+            (print " \\neq ")
+            (tex-stlc-type (nth c 2))
+            (println ""))
+          (= (first c) 'typingo)
+          (do
+            (print "\\text{no case for } ")
+            (tex-stlc-typ c)
+            (println "")))
+        false))))
 
 (defn tex-stlc-proof-tree-sub [d]
-  (println "\\[")
-  (tex-stlc-proof-tree-one d)
-  (println "\\]"))
+  (when (proof-head-ok d) (println "\\["))
+  (let [r (tex-stlc-proof-tree-one d)]
+    (when (proof-head-ok d) (println "\\]"))
+    r))
 
 (defn tex-stlc-proof-tree-top [ds]
   (println "\\prooftree")
@@ -123,4 +152,42 @@
                     (typingo-deriv ['typingo c () `((~'fn ~(nom/tie x x)) (~'fn ~(nom/tie x x))) t] d)
                     (== q d))))))))))
 
+  (spit
+    "tex/debug_ex1.tex"
+    (with-out-str
+      (tex-stlc-proof-tree-top
+        (read-string
+          (prn-str
+            (first
+              (run* [q]
+                (fresh [c t d ok]
+                  (nom/fresh [x]
+                    (typingo-debug ['typingo c () `(~'fn ~(nom/tie x [x x])) t] d ok)
+                    (== q d))))))))))
+
+  (spit
+    "tex/debug_ex2.tex"
+    (with-out-str
+      (tex-stlc-proof-tree-top
+        (read-string
+          (prn-str
+            (first
+              (run* [q]
+                (fresh [c t d ok]
+                  (nom/fresh [x y]
+                    (typingo-debug ['typingo c () `(~'fn ~(nom/tie x y)) t] d ok)
+                    (== q d))))))))))
+
+  (spit
+    "tex/debug_ex3.tex"
+    (with-out-str
+      (tex-stlc-proof-tree-top
+        (read-string
+          (prn-str
+            (first
+              (run* [q]
+                (fresh [c t d ok]
+                  (nom/fresh [x]
+                    (typingo-debug ['typingo c () `(~'fn ~(nom/tie x `(~x ~x ~x))) t] d ok)
+                    (== q d))))))))))
 )

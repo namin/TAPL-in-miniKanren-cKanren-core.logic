@@ -79,4 +79,12 @@
                  (nom/fresh [x y]
                    (typingo-debug ['typingo c () `(~'fn ~(nom/tie x y)) t] d ok)
                    (== q [c t d ok]))))))
-        '([T-Abs [:=> _0 _1] ([[typingo T-Abs () (fn [a_2] a_3) [:=> _0 _1]] <-- ([[typingo T-Var ([a_4 _0]) a_3 _1] <-- ([[lookupo ([a_4 _0]) a_3 _1] error])] [[== [:=> _0 _1] [:=> _0 _1]] <-- ()])]) false]))))
+        '([T-Abs [:=> _0 _1] ([[typingo T-Abs () (fn [a_2] a_3) [:=> _0 _1]] <-- ([[typingo T-Var ([a_4 _0]) a_3 _1] <-- ([[lookupo ([a_4 _0]) a_3 _1] error])] [[== [:=> _0 _1] [:=> _0 _1]] <-- ()])]) false])))
+  (is (= (read-string
+           (prn-str
+             (run* [q]
+               (fresh [c t d ok]
+                 (nom/fresh [x]
+                   (typingo-debug ['typingo c () `(~'fn ~(nom/tie x `(~x ~x ~x))) t] d ok)
+                   (== q [c t d ok]))))))
+        '([T-Abs [:=> _0 _1] ([[typingo T-Abs () (fn [a_2] [a_2 a_2 a_2]) [:=> _0 _1]] <-- ([[typingo _3 ([a_4 _0]) (a_4 a_4 a_4) _1] error] [[== [:=> _0 _1] [:=> _0 _1]] <-- ()])]) false]))))
