@@ -120,26 +120,28 @@
 
 (def quines-debug-so (debug-so-solve-for quines-solver-clause))
 
+(defn- quine [a]
+  `((~'fn ~(nom/tie a `(~'cons ~a (~'cons (~'cons (~'quote ~'quote) (~'cons ~a ~())) ~()))))
+     (~'quote (~'fn ~(nom/tie a `(~'cons ~a (~'cons (~'cons (~'quote ~'quote) (~'cons ~a ~())) ~())))))))
+
+(defn- pp-overflows [rs]
+  (doseq [r rs]
+    (println "---")
+    (doseq [o (second r)]
+      (println o)
+      (println ""))
+    (println "---")))
+
 (defn -main[]
-  (let [quine (fn [a]
-                `((~'fn ~(nom/tie a `(~'cons ~a (~'cons (~'cons (~'quote ~'quote) (~'cons ~a ~())) ~()))))
-                   (~'quote (~'fn ~(nom/tie a `(~'cons ~a (~'cons (~'cons (~'quote ~'quote) (~'cons ~a ~())) ~())))))))
-        pp-overflows (fn [rs]
-                       (doseq [r rs]
-                         (println "---")
-                         (doseq [o (second r)]
-                           (println o)
-                           (println ""))
-                         (println "---")))]
-    (pp-overflows (run* [q]
-                    (fresh [p o]
-                      (nom/fresh [a]
-                        (== p (quine a))
-                        (quines-debug-so ['redo* p p] 7 o)
-                        (== q o)))))
-    (pp-overflows (run 2 [q]
-                    (fresh [p o]
-                      (nom/fresh [a]
-                        (quines-debug-so ['redo* p p] 4 o)
-                        (== p (quine a))
-                        (== q o)))))))
+  (pp-overflows (run* [q]
+                  (fresh [p o]
+                    (nom/fresh [a]
+                      (== p (quine a))
+                      (quines-debug-so ['redo* p p] 7 o)
+                      (== q o)))))
+  (pp-overflows (run 2 [q]
+                  (fresh [p o]
+                    (nom/fresh [a]
+                      (quines-debug-so ['redo* p p] 4 o)
+                      (== p (quine a))
+                      (== q o))))))
