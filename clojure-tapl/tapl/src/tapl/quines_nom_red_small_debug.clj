@@ -124,6 +124,19 @@
   `((~'fn ~(nom/tie a `(~'cons ~a (~'cons (~'cons (~'quote ~'quote) (~'cons ~a ~())) ~()))))
      (~'quote (~'fn ~(nom/tie a `(~'cons ~a (~'cons (~'cons (~'quote ~'quote) (~'cons ~a ~())) ~())))))))
 
+(defn- restrict-search [filter-fun clause global]
+  (fn [head tail]
+    (fn [a]
+      (if (bind a (filter-fun head global))
+        (bind a (clause head tail))
+        nil))))
+
+(defn- only-our-quine [head global]
+  (nom/fresh [x]
+    (== global (quine x))))
+
+(defn quines-debug-so-restricted [global] (debug-so-solve-for (restrict-search only-our-quine quines-solver-clause global)))
+
 (defn- pp-overflows [rs]
   (doseq [r rs]
     (println "---")
@@ -144,4 +157,11 @@
                     (nom/fresh [a]
                       (quines-debug-so ['redo* p p] 4 o)
                       (== p (quine a))
-                      (== q o))))))
+                      (== q o)))))
+  (pp-overflows (run 2 [q]
+                  (fresh [p o]
+                    (nom/fresh [a]
+                      ((quines-debug-so-restricted p) ['redo* p p] 5 o)
+                      (== p (quine a))
+                      (== q o)))))
+  )
