@@ -127,9 +127,10 @@
 (defn- restrict-search [filter-fun clause global]
   (fn [head tail]
     (fn [a]
-      (if (bind a (filter-fun head global))
-        (bind a (clause head tail))
-        nil))))
+      (bind* a
+        (filter-fun head global)
+        (fn [b] a)
+        (clause head tail)))))
 
 (defn- only-our-quine [head global]
   (nom/fresh [x]
@@ -137,42 +138,60 @@
 
 (defn quines-debug-so-restricted [global] (debug-so-solve-for (restrict-search only-our-quine quines-solver-clause global)))
 
+(defn without-constraints [r]
+  (if (= ':- (second r))
+    (first r)
+    r))
+
 (defn- pp-overflows [title rs]
   (println "")
   (println ";; --- begin" title "---")
   (doall
     (map-indexed
       (fn [i r]
-        (println ";; --- --- begin result" i "for" title)
-        (doseq [o (second r)]
-          (println o)
-          (println ""))
-        (println ";; --- --- end result" i "for" title)
+        (println ";; --- --- begin result" (inc i) "for" title)
+        (let [[p os] (without-constraints r)]
+          (println p)
+          (println "")
+          (if (symbol? os)
+            (println ";; " os)
+            (doseq [o (second os)]
+              (println o)
+              (println ""))))
+        (println ";; --- --- end result" (inc i) "for" title)
         (println ""))
       rs))
   (println ";; --- end" title "---")
   (println ""))
 
 (defn -main[]
-  (pp-overflows "known"
+  (pp-overflows "known no-overflow"
     (run* [q]
       (fresh [p o]
         (nom/fresh [a]
-          (== p (quine a))
-          (quines-debug-so ['redo* p p] 7 o)
-          (== q o)))))
-  (pp-overflows "run 2 overflow 4"
-    (run 2 [q]
+          (== p (quine a)))
+        ((quines-debug-so-restricted p) ['redo* p p] 8 o)
+        (== q [p o]))))
+  (pp-overflows "known overflow"
+    (run 1 [q]
       (fresh [p o]
         (nom/fresh [a]
-          (quines-debug-so ['redo* p p] 4 o)
-          (== p (quine a))
-          (== q o)))))
-  (pp-overflows "run 2 overflow 4 restricted"
-    (run 2 [q]
+          (== p (quine a)))
+        ((quines-debug-so-restricted p) ['redo* p p] 7 o)
+        (== q [p o]))))
+  (pp-overflows "unknown overflow restricted"
+    (run 1 [q]
       (fresh [p o]
-        (nom/fresh [a]
-          ((quines-debug-so-restricted p) ['redo* p p] 5 o)
-          (== p (quine a))
-          (== q o)))))
-  )
+        ((quines-debug-so-restricted p) ['redo* p p] 7 o)
+        (nom/fresh [a] (== p (quine a)))
+        (== q [p o]))))
+  (pp-overflows "unknown overflow restricted never known"
+    (run* [q]
+      (fresh [p o]
+        ((quines-debug-so-restricted p) ['redo* p p] 7 o)
+        (== q [p o]))))
+  (pp-overflows "unknown overflow 8 restricted never known"
+    (run* [q]
+      (fresh [p o]
+        ((quines-debug-so-restricted p) ['redo* p p] 8 o)
+        (== q [p o])))))
