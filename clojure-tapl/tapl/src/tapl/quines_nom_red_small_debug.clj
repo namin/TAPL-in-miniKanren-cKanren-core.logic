@@ -139,15 +139,18 @@
 
 (defn- pp-overflows [title rs]
   (println "")
-  (println ";; --- begin " title "---")
-  (doseq [r rs]
-    (println ";; --- --- begin one")
-    (doseq [o (second r)]
-      (println o)
-      (println ""))
-    (println ";; --- --- end one")
-    (println ""))
-  (println ";; --- end " title "---")
+  (println ";; --- begin" title "---")
+  (doall
+    (map-indexed
+      (fn [i r]
+        (println ";; --- --- begin result" i "for" title)
+        (doseq [o (second r)]
+          (println o)
+          (println ""))
+        (println ";; --- --- end result" i "for" title)
+        (println ""))
+      rs))
+  (println ";; --- end" title "---")
   (println ""))
 
 (defn -main[]
