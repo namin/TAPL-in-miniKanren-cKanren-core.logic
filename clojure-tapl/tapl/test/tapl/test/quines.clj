@@ -1,5 +1,6 @@
 (ns tapl.test.quines
   (:use [tapl.quines])
+  (:use [tapl.utils])
   (:refer-clojure :exclude [==])
   (:use [clojure.core.logic :exclude [is]])
   (:use [clojure.core.match :only [match]])
@@ -34,6 +35,12 @@
     (is (= p '((fn [_0] (list _0 (list 'quote _0)))
                '(fn [_0] (list _0 (list 'quote _0))))))))
 
+(deftest test-quines
+  (let [ps (run 10 [q] (eval-expo q '() q))]
+    (doseq [p ps]
+      (let [p (read-string (prn-str (without-constraints p)))]
+        (is (= p (eval p)))))))
+
 (deftest test-twine
   (is (= (map first (run 1 [q] (fresh [x y]
                                       (!= x y)
@@ -44,3 +51,4 @@
               '(fn [_0] (list 'quote (list _0 (list 'quote _0)))))
             ((fn [_0] (list 'quote (list _0 (list 'quote _0))))
              '(fn [_0] (list 'quote (list _0 (list 'quote _0)))))]))))
+
