@@ -7,6 +7,11 @@
 (defn nomo [x]
   (predc x nom? `nom?))
 
+(defn not-tie? [x]
+  (not (tie? x)))
+(defn not-tie-o [x]
+  (predc x not-tie? `not-tie?))
+
 (defn lookupo [x env t]
   (fresh (y v rest)
          (conso [y v] rest env)
@@ -21,6 +26,7 @@
     [(fresh (v)
        (== `(~'quote ~v) exp)
        (nom/hash closure-nom v)
+       (not-tie-o v)
        (== v val))]
     [(fresh (as)
        (conso 'list as exp)
