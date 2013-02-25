@@ -1,4 +1,5 @@
 (ns tapl.quines_nom_red_small_debug
+  (:use [tapl.utils])
   (:refer-clojure :exclude [==])
   (:use [clojure.core.logic :exclude [is] :as l]
     [clojure.core.logic.nominal :exclude [fresh hash] :as nom])
@@ -137,11 +138,6 @@
     (== global (quine x))))
 
 (defn quines-debug-so-restricted [global] (debug-so-solve-for (restrict-search only-our-quine quines-solver-clause global)))
-
-(defn without-constraints [r]
-  (if (= ':- (second r))
-    (first r)
-    r))
 
 (defn- pp-overflows [title rs]
   (println "")
