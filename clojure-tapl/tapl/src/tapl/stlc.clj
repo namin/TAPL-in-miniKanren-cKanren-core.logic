@@ -100,6 +100,7 @@
     ;; T-App
     [(fresh [ty11 ty12 t1 t2]
        (== t `(~t1 ~t2))
+       (!= 'fn t1)
        (== ty ty12)
        (typingo gamma t2 ty11)
        (typingo gamma t1 [:=> ty11 ty12]))]))
