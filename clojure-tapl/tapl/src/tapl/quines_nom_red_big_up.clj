@@ -5,11 +5,15 @@
   (:require [clojure.pprint :as pp])
   (:import [java.io Writer]))
 
+(defn nomo [x]
+  (predc x nom? `nom?))
+
 (declare list-substo)
 
 (defn substo [e new a out]
   (conde
     [(== a e) (== new out)]
+    [(nomo e) (== e out) (!= a e)]
     [(fresh [v]
        (== `(~'quote ~v) e)
        (== `(~'quote ~v) out))]
@@ -51,6 +55,13 @@
     [(fresh [v]
        (== `(~'quote ~v) e)
        (== `(~'quote ~v) out))]
+    [(fresh [body bodyres]
+       (nom/fresh [c]
+         (== `(~'fn ~(nom/tie c body)) e)
+         (== `(~'fn ~(nom/tie c bodyres)) out)
+         (nom/hash c a)
+         (nom/hash c new)
+         (substo body new a bodyres)))]
     [(fresh [es vs]
        (conso 'list es e)
        (== `(~'quote ~vs) out)

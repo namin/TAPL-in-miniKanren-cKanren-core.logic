@@ -28,3 +28,7 @@
     (doseq [p ps]
       (let [p (read-string (prn-str p))]
         (is (= p (eval p)))))))
+
+(deftest test-regression-1
+  (= (read-string (prn-str (run* [q] (nom/fresh [a b] (evalo `((~'fn ~(nom/tie a `(~'fn ~(nom/tie b `(~a ~b))))) (~'fn ~(nom/tie a a))) q)))))
+    '((fn [a_0] ((fn [a_1] a_1) a_0)))))
