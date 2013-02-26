@@ -1,6 +1,7 @@
 (ns tapl.test.quines_nom_red_big_up
-  (:use [tapl.quines_nom_red_big_up]
-        clojure.test :reload)
+  (:use [tapl.quines_nom_red_big_up]  :reload)
+  (:use [tapl.utils])
+  (:use [clojure.test])
   (:refer-clojure :exclude [==])
   (:use [clojure.core.logic :exclude [is] :as l]
         [clojure.core.logic.nominal :exclude [fresh hash] :as nom])
@@ -24,10 +25,10 @@
                 (quote (fn [a_0] (list a_0 (list (quote quote) a_0)))))))))
 
 (deftest test-quines
-  (let [ps (run 1 [q] (evalo q `(~'quote ~q)))]
+  (let [ps (run 5 [q] (evalo q `(~'quote ~q)))]
     (doseq [p ps]
-      (let [p (read-string (prn-str p))]
-        (is (= p (eval p)))))))
+      (let [p (read-string (prn-str (without-constraints p)))]
+        (is (= (eval p) (eval (eval p))))))))
 
 (deftest test-regression-1
   (= (read-string (prn-str (run* [q] (nom/fresh [a b] (evalo `((~'fn ~(nom/tie a `(~'fn ~(nom/tie b `(~a ~b))))) (~'fn ~(nom/tie a a))) q)))))
