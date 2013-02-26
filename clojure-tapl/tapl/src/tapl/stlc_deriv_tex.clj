@@ -160,6 +160,19 @@
                     (== q d))))))))))
 
   (spit
+    "tex/ex3.tex"
+    (with-out-str
+      (tex-stlc-proof-tree-top
+        (read-string
+          (prn-str
+            (first
+              (run* [q]
+                (fresh [c t d]
+                  (nom/fresh [f g a]
+                    (typingo-deriv ['typingo c  () `(~'fn ~(nom/tie f `(~'fn ~(nom/tie g `(~'fn ~(nom/tie a `(~g (~f ~a)))))))) t] d)
+                    (== q d))))))))))
+
+  (spit
     "tex/debug_ex1.tex"
     (with-out-str
       (tex-stlc-proof-tree-top

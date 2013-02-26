@@ -5,4 +5,5 @@
                  [org.clojure/core.logic "0.8.0-rc3-SNAPSHOT"]
                  [logically "0.1.1-SNAPSHOT"]
                  [org.clojure/core.match "0.2.0-alpha11"]]
-  :dev-dependencies [[lein-swank "1.4.3"]])
+  :jvm-opts ["-Xss5M"]
+)

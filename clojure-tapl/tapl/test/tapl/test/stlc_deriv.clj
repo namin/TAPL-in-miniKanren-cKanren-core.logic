@@ -1,6 +1,6 @@
 (ns tapl.test.stlc_deriv
-  (:use [tapl.stlc_deriv]
-        clojure.test :reload)
+  (:use [tapl.stlc_deriv]  :reload)
+  (:use [clojure.test])
   (:refer-clojure :exclude [==])
   (:use [clojure.core.logic :exclude [is] :as l]
         [clojure.core.logic.nominal :exclude [fresh hash] :as nom])
@@ -27,7 +27,13 @@
            (fresh [c t d]
              (nom/fresh [x]
                (typingo-deriv ['typingo c () `(~'fn ~(nom/tie x [x x])) t] d))))
-        ())))
+        ()))
+  (is (= (run* [q]
+           (fresh [c t d]
+             (nom/fresh [f g a]
+               (typingo-deriv ['typingo c  () `(~'fn ~(nom/tie f `(~'fn ~(nom/tie g `(~'fn ~(nom/tie a `(~g (~f ~a)))))))) t] d)
+               (== q t))))
+        '([:=> [:=> _0 _1] [:=> [:=> _1 _2] [:=> _0 _2]]]))))
 
 (deftest test-typingo-only-debug
   (is (= (read-string
@@ -87,4 +93,10 @@
                  (nom/fresh [x]
                    (typingo-debug ['typingo c () `(~'fn ~(nom/tie x `(~x ~x ~x))) t] d ok)
                    (== q [c t d ok]))))))
-        '([T-Abs [:=> _0 _1] ([[typingo T-Abs () (fn [a_2] [a_2 a_2 a_2]) [:=> _0 _1]] <-- ([[typingo _3 ([a_4 _0]) (a_4 a_4 a_4) _1] error] [[== [:=> _0 _1] [:=> _0 _1]] <-- ()])]) false]))))
+        '([T-Abs [:=> _0 _1] ([[typingo T-Abs () (fn [a_2] [a_2 a_2 a_2]) [:=> _0 _1]] <-- ([[typingo _3 ([a_4 _0]) (a_4 a_4 a_4) _1] error] [[== [:=> _0 _1] [:=> _0 _1]] <-- ()])]) false])))
+  (is (= (run* [q]
+           (fresh [c t d ok]
+             (nom/fresh [f g a]
+               (typingo-debug ['typingo c  () `(~'fn ~(nom/tie f `(~'fn ~(nom/tie g `(~'fn ~(nom/tie a `(~g (~f ~a)))))))) t] d ok)
+               (== q [ok t]))))
+        '([true [:=> [:=> _0 _1] [:=> [:=> _1 _2] [:=> _0 _2]]]]))))
