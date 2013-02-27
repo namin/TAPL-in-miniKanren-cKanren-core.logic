@@ -86,49 +86,31 @@
        (esubsto first new a `(~'quote ~firstv))
        (list-esubsto rest new a restv))]))
 
-(declare check-ties check-ties-o)
+(declare check-ties-o)
 
-(defn- -check-ties
-  [x p]
-  (reify
-    Object
-    (toString [_]
-      (str "<check-ties" x "|" p ">"))
-    clojure.lang.IFn
-    (invoke [c s]
-      (let [x (walk s x)]
-        ((composeg*
-           (remcg c)
-           (cond
-             (tie? x)
-             (composeg*
-               (== p `(~'fn ~x))
-               (check-ties-o (:body x)))
-             (not (tree-term? x))
-             succeed
-             :else
-             (constrain-tree x
-               (fn [t s] ((check-ties t x) s))))) s)))
-    IConstraintOp
-    (rator [_] `check-ties)
-    (rands [_] [x p])
-    IReifiableConstraint
-    (reifyc [_ v r s]
-      (let [x (walk* r (walk* s x))
-            p (walk* r (walk* s p))]
-        `(~'check-ties ~x ~p)))
-    IRunnable
-    (runnable? [_ s]
-      (let [x (walk s x)]
-        (not (lvar? x))))
-    IConstraintWatchedStores
-    (watched-stores [this] #{::l/subst})))
-
-(defn check-ties [x p]
-  (cgoal (-check-ties x p)))
+(defn check-ties [xp]
+  (fixc xp
+    ;; constraint body
+    (fn [[x p] s reifier]
+      (let [x (walk s x)
+            p (walk s p)]
+        (cond
+          (tie? x) (composeg*
+                     (== p `(~'fn ~x))
+                     (check-ties-o (:body x)))
+          (not (tree-term? x)) succeed
+          :else (constrain-tree x
+                  (fn [t s] ((check-ties [t x]) s))))))
+    ;; runnable predicate
+    (fn [[x p] a]
+      (not (lvar? (walk a x))))
+    ;; reifier
+    (fn [_ _ _ r _]
+      (let [[x p] (walk* r xp)]
+        `(~'check-ties ~x ~p)))))
 
 (defn check-ties-o [x]
-  (check-ties x nil))
+  (check-ties [x nil]))
 
 (declare list-evalo)
 
