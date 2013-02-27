@@ -1,7 +1,8 @@
 (ns tapl.quines_nom_red_big_up
   (:refer-clojure :exclude [==])
   (:use [clojure.core.logic :exclude [is] :as l]
-        [clojure.core.logic.nominal :exclude [fresh hash] :as nom])
+        [clojure.core.logic.nominal :exclude [fresh hash] :as nom]
+        [clojure.core.logic.protocols])
   (:require [clojure.pprint :as pp])
   (:import [java.io Writer]))
 
@@ -85,10 +86,51 @@
        (esubsto first new a `(~'quote ~firstv))
        (list-esubsto rest new a restv))]))
 
-(defn not-tie? [x]
-  (not (tie? x)))
-(defn not-tie-o [x]
-  (predc x not-tie? `not-tie?))
+(declare check-ties check-ties-o)
+
+(defn- -check-ties
+  [x p]
+  (reify
+    Object
+    (toString [_]
+      (str "<check-ties" x "|" p ">"))
+    clojure.lang.IFn
+    (invoke [c s]
+      (let [x (walk s x)
+            p (walk s p)]
+        ((composeg*
+           (remcg c)
+           (cond
+             (tie? x)
+             (composeg*
+               (== p `(~'fn ~x))
+               (check-ties-o (:body x)))
+             (not (tree-term? x))
+             succeed
+             :else
+             (constrain-tree x
+               (fn [t s] ((check-ties t x) s))))) s)))
+    IConstraintOp
+    (rator [_] `check-ties)
+    (rands [_] [x p])
+    IReifiableConstraint
+    (reifyc [_ v r s]
+      (let [x (walk* r (walk* s x))
+            p (walk* r (walk* s p))]
+        `(~'check-ties ~x ~p)))
+    IRunnable
+    (runnable? [_ s]
+      (let [x (walk s x)
+            p (walk s p)]
+        (not (lvar? x))))
+    IConstraintWatchedStores
+    (watched-stores [this] #{::l/subst})))
+
+(defn check-ties [x p]
+  (cgoal (-check-ties x p)))
+
+(defn check-ties-o [x]
+  (check-ties x nil))
 
 (declare list-evalo)
 
@@ -96,7 +138,7 @@
   (conde
     [(fresh [v]
        (== `(~'quote ~v) exp)
-       (not-tie-o v)
+       (check-ties-o v)
        (== `(~'quote ~v) val))]
     [(fresh [body]
        (nom/fresh [a]
