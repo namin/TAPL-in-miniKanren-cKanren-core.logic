@@ -96,8 +96,7 @@
       (str "<check-ties" x "|" p ">"))
     clojure.lang.IFn
     (invoke [c s]
-      (let [x (walk s x)
-            p (walk s p)]
+      (let [x (walk s x)]
         ((composeg*
            (remcg c)
            (cond
@@ -120,8 +119,7 @@
         `(~'check-ties ~x ~p)))
     IRunnable
     (runnable? [_ s]
-      (let [x (walk s x)
-            p (walk s p)]
+      (let [x (walk s x)]
         (not (lvar? x))))
     IConstraintWatchedStores
     (watched-stores [this] #{::l/subst})))
@@ -151,6 +149,9 @@
     [(fresh [rator rand body randval]
        (nom/fresh [a]
          (== `(~rator ~rand) exp)
+         (!= rator 'quote)
+         (!= rator 'fn)
+         (!= rator 'list)
          (evalo rator `(~'fn ~(nom/tie a body)))
          (evalo rand randval)
          (esubsto body randval a val)))]))
