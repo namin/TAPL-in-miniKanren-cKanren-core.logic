@@ -38,7 +38,7 @@
     [(fresh [t1 t1r]
        (nom/fresh [y]
          (== t `(~'fn ~(nom/tie y t1)))
-         (== t `(~'fn ~(nom/tie y t1r)))
+         (== out `(~'fn ~(nom/tie y t1r)))
          (nom/hash y x)
          (nom/hash y v)
          (substo x v t1 t1r)))]
