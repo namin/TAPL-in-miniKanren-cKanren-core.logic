@@ -1,4 +1,4 @@
-(ns tapl.test.meta_theory_test
+(ns tapl.test.meta_theory
   (:use [tapl.meta_theory] :reload)
   (:use [tapl.stlc_ext])
   (:refer-clojure :exclude [==])
