@@ -97,7 +97,7 @@
          (== exp val)))]
     [(fresh [es vs]
        (conso 'list es exp)
-       (== `(~'quote vs) val)
+       (== `(~'quote ~vs) val)
        (list-evalo es vs))]
     [(fresh [rator rand body randval]
        (nom/fresh [a]
