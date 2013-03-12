@@ -1,9 +1,11 @@
 (ns tapl.quines_nom_red_explore
-  (:use [tapl.quines_nom_red_big_base] :reload)
+  (:use [tapl.quines_nom_red_big_base])
   (:refer-clojure :exclude [==])
   (:use [clojure.core.logic :exclude [is] :as l]
         [clojure.core.logic.nominal :exclude [fresh hash] :as nom]
         [clojure.core.logic.protocols]))
+
+(declare redfo)
 
 (defn substfo [e new a out val]
   (conde
@@ -77,17 +79,6 @@
     (conde
       [(== step 'done)]
       [(!= step 'done)
-       (fn [a] (println (-reify a step)) a)
+       ;(fn [a] (println (-reify a step)) a)
        (redfo* step e2)])))
 
-(comment
-  (run 1 [q] (fresh [p] (nom/fresh [a] (redfo* (nom/tie a a) p) (cljo p q))))
-  (run 1 [q] (fresh [p1 p2] (nom/fresh [a] (redfo* p1 p2) (cljo p1 q))))
-
-  (run 1 [q] (fresh [p] (redfo* `(~'list (~'quote ~'a) (~'list (~'quote ~'b) (~'quote ~'c))) p) (cljo p q)))
-  
-  (run 1 [q] (fresh [p] (redfo* p `(~'quote ~p)) (cljo p q)))
-  (((fn [a_0] (list a_0 (list (quote quote) a_0))) (quote (fn [a_1] (list a_1 (list (quote quote) a_1))))))
-
-  (run 1 [q] (fresh [p s] (redfo p s `(~'quote ~p)) (== q s)))
-  ((list (quote [a_0] (list a_0 (list (quote quote) a_0))) (list (quote quote) (quote [a_0] (list a_0 (list (quote quote) a_0)))))))
