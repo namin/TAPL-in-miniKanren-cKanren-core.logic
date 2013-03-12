@@ -5,14 +5,6 @@
         [clojure.core.logic.nominal :exclude [fresh hash] :as nom]
         [clojure.core.logic.protocols]))
 
-(defn valo [exp]
-  (conde
-    [(fresh [v]
-       (== `(~'quote ~v) exp))]
-    [(fresh [body]
-       (nom/fresh [a]
-         (== (nom/tie a body) exp)))]))
-
 (defn redfo [exp step val]
   (conde
     [(fresh [v]
@@ -27,13 +19,15 @@
     [(fresh [es vs]
        (conso 'list es exp)
        (== `(~'quote ~vs) val)
-       (list-evalo es vs)
-       (fresh [e1 e2]
+       (fresh [e1 e2 s1 s2 v1 v2]
+         (== vs `(~v1 ~v2))
          (== `(~'list ~e1 ~e2) exp)
          (conde
-           [(valo e1) (valo e2) (== step val)]
-           [(valo e1) (fresh [s2 v2] (!= s2 'done) (redfo e2 s2 v2) (== step `(~'list ~e1 ~s2)))]
-           [(fresh [s1 v1] (!= s1 'done) (redfo e1 s1 v1) (== step `(~'list ~s1 ~e2)))])))]
+           [(== s1 'done) (== s2 'done) (== step val)]
+           [(== s1 'done) (!= s2 'done) (== step `(~'list ~e1 ~s2))]
+           [(!= s1 'done) (== step `(~'list ~s1 ~e2))])
+         (redfo e1 s1 `(~'quote ~v1))
+         (redfo e2 s2 `(~'quote ~v2))))]
     [(fresh [rator rand body randval]
        (nom/fresh [a]
          (== `(~rator ~rand) exp)
@@ -53,6 +47,7 @@
     (conde
       [(== step 'done)]
       [(!= step 'done)
+       (fn [a] (println (-reify a step)) a)
        (redfo* step e2)])))
 
 (comment
