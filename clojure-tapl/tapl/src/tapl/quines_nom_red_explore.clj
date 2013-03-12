@@ -28,18 +28,18 @@
            [(!= s1 'done) (== step `(~'list ~s1 ~e2))])
          (redfo e1 s1 `(~'quote ~v1))
          (redfo e2 s2 `(~'quote ~v2))))]
-    [(fresh [rator rand body randval]
+    [(fresh [rator rand body randval ratorstep randstep]
        (nom/fresh [a]
          (== `(~rator ~rand) exp)
          (!= rator 'quote)
          (!= rator 'list)
-         (evalo rator (nom/tie a body))
-         (evalo rand randval)
+         (redfo rator ratorstep (nom/tie a body))
+         (redfo rand randstep randval)
          (esubsto body randval a val)
          (conde
-           [(valo rator) (valo rand) (substo body rand a step)]
-           [(fresh [s v] (!= s 'done) (redfo rator s v) (== step `(~s ~rand)))]
-           [(valo rator) (fresh [s v] (!= s 'done) (redfo rand s v) (== step `(~rator ~s)))])))]))
+           [(== ratorstep 'done) (== randstep 'done) (substo body rand a step)]
+           [(== ratorstep 'done) (!= randstep 'done) (== step `(~rator ~randstep))]
+           [(!= ratorstep 'done) (== step `(~ratorstep ~rand))])))]))
 
 (defn redfo* [e1 e2]
   (fresh [step]
@@ -61,4 +61,36 @@
 
   (run 1 [q] (fresh [p s] (redfo p s `(~'quote ~p)) (== q s)))
   ((list (quote [a_0] (list a_0 (list (quote quote) a_0))) (list (quote quote) (quote [a_0] (list a_0 (list (quote quote) a_0)))))))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
