@@ -63,13 +63,13 @@
          (== `(~rator ~rand) exp)
          (!= rator 'quote)
          (!= rator 'list)
-         (redfo rator ratorstep (nom/tie a body))
-         (redfo rand randstep randval)
-         (substfo body randval a subst-step val)
          (conde
            [(== ratorstep 'done) (== randstep 'done) (== step subst-step)]
            [(== ratorstep 'done) (!= randstep 'done) (== step `(~rator ~randstep))]
-           [(!= ratorstep 'done) (== step `(~ratorstep ~rand))])))]))
+           [(!= ratorstep 'done) (== step `(~ratorstep ~rand))])
+         (redfo rator ratorstep (nom/tie a body))
+         (redfo rand randstep randval)
+         (substfo body randval a subst-step val)))]))
 
 (defn redfo* [e1 e2]
   (fresh [step]
