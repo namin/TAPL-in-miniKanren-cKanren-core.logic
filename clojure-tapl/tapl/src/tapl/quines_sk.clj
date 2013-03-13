@@ -45,32 +45,39 @@
 (defn doneo [in]
   (fresh [a d]
     (conso a d in)
-    (!= a '.)
     (!= a '_)))
+
+(defn combo [h t l]
+  (fresh [a d]
+    (conso a d l)
+    (conde
+      [(== a '.)
+       (fresh [a2]
+         (conso a2 t d)
+         (== `(~'. ~a2) h))]
+      [(!= a '.) (== a h) (== d t) ])))
 
 (defn evalo [in1 in2 out1 out2]
   (fresh [a d]
     (conso a d in1)
     (conde
-      [(== a '.)
-        (fresh [c r]
-          (conso c r d)
-          (symbolo c)
-          (evalo (lcons `(~'. ~c) r) in2 out1 out2))]
       [(== a '_)
-        (fresh [f rf arg rarg fun fbody sarg outf outf2 outarg rest]
-          (evalo d (lcons f rf) out1 outf)
+        (fresh [f rf cf arg rarg carg fun fbody sarg outf outf2 outarg rest]
+          (evalo d cf out1 outf)
+          (combo f rf cf)
           (nom/fresh [x y z]
             (conde
               [(fresh [c] (== f `(~'. ~c)) (symbolo c) (== fun (nom/tie x `(~x))) (conso c outf2 outf))]
               [(== f 'i) (== fun (nom/tie x `(~x))) (== outf2 outf)]
               [(== f 'k) (== fun (nom/tie x `(~(nom/tie y `(~x))))) (== outf2 outf)]
               [(== f 's) (== fun (nom/tie x `(~(nom/tie y `(~(nom/tie z `(~'_ ~'_ ~x ~z ~'_ ~y ~z))))))) (== outf2 outf)]
+              [(== f 'v) (== fun (nom/tie x `(~'v))) (== outf2 outf)]
               [(== f (nom/tie x fbody)) (== fun f) (== outf2 outf)])
             (== fun (nom/tie x fbody))
             (nom/hash x arg)
             (substo fbody arg x sarg))
-          (evalo rf (lcons arg rarg) outf2 outarg)
+          (evalo rf carg outf2 outarg)
+          (combo arg rarg carg)
           (appendo sarg rarg rest)
           (evalo rest in2 outarg out2))]
       [(doneo in1) (== in1 in2) (== out1 out2)])))
