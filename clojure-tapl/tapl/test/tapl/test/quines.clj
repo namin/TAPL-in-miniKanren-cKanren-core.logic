@@ -7,7 +7,7 @@
   (:use [clojure.test]))
 
 (deftest test-symbolo
-  (is (= (run* [q] (symbolo q)) '((_0 :- clojure.core/symbol?))))
+  (is (= (run* [q] (symbolo q)) '((_0 :- (sym _0)))))
   (is (= (run* [q] (symbolo q) (== 'foo q)) '(foo)))
   (is (= (run* [q] (symbolo q) (== 5 q)) '()))
   (is (= (run* [q] (symbolo q) (== '(hello there) q)) '())))

@@ -8,6 +8,7 @@
 ;; http://users-cs.au.dk/danvy/sfp12/papers/byrd-holk-friedman-paper-sfp12.pdf
 
 (ns tapl.quines
+  (:use [tapl.utils])
   (:refer-clojure :exclude [==])
   (:use clojure.core.logic)
   (:use [clojure.core.match :only [match]]))
@@ -19,9 +20,6 @@
            (!= y x)
            (not-in-envo x rest))]
    [(== '() env)]))
-
-(defn symbolo [x]
-  (predc x symbol? `symbol?))
 
 (defn progo? [x]
   (not (some #{:closure} (flatten (list x)))))

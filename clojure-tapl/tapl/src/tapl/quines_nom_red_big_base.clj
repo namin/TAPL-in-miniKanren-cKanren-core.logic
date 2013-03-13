@@ -1,13 +1,9 @@
 (ns tapl.quines_nom_red_big_base
+  (:use [tapl.utils])
   (:refer-clojure :exclude [==])
   (:use [clojure.core.logic :exclude [is] :as l]
         [clojure.core.logic.nominal :exclude [fresh hash] :as nom]
         [clojure.core.logic.protocols]))
-
-(defn nomo [x]
-  (predc x nom? `nom?))
-(defn symbolo [x]
-  (predc x symbol? `symbol?))
 
 (declare list-substo)
 
