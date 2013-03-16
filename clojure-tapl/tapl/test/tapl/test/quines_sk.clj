@@ -75,5 +75,5 @@
 
 (deftest test-backwards-2
   (is (= (run 3 [q] (fresh [i o end] (flatto q) (appendo '(_ _ _ s k) end q) (evalo q '(i) () ())))
-        ;; it stalls without the k                   here
+        ;; it stalls without the k                                 here
         '((_ _ _ s k i i) (_ _ _ s k k i) (_ _ _ s k v i)))))
