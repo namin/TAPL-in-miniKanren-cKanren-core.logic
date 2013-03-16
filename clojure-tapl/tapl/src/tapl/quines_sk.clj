@@ -23,24 +23,33 @@
 (def sk-hello-n (unl2sk unl-hello-n))
 (def sk-quine (unl2sk unl-quine))
 
-(defn substo [e new a out]
+(declare dsubsto)
+
+(defn substo [e new a out1 out2]
   (conde
-    [(nomo e) (== e a) (== new out)]
-    [(nomo e) (!= e a) (== e out)]
-    [(symbolo e) (== e out)]
-    [(== e ()) (== e out)]
-    [(fresh [h t ho to]
+    [(nomo e) (== e a) (conso new out2 out1)]
+    [(nomo e) (!= e a) (conso e out2 out1)]
+    [(symbolo e) (conso e out2 out1)]
+    [(== e ()) (conso e out2 out1)]
+    [(fresh [h t oi]
        (conso h t e)
-       (conso ho to out)
-       (substo h new a ho)
-       (substo t new a to))]
+       (substo h new a out1 oi)
+       (dsubsto t new a oi out2))]
     [(fresh [b bo]
        (nom/fresh [c]
          (== e (nom/tie c b))
-         (== out (nom/tie c bo))
+         (conso (nom/tie c bo) out2 out1)
          (nom/hash c a)
          (nom/hash c new)
-         (substo b new a bo)))]))
+         (dsubsto b new a bo ())))]))
+
+(defn dsubsto [e new a out1 out2]
+  (conde
+    [(== e ()) (== out2 out1)]
+    [(fresh [h t oi]
+       (conso h t e)
+       (substo h new a out1 oi)
+       (dsubsto t new a oi out2))]))
 
 (defn doneo [in]
   (fresh [a d]
@@ -57,12 +66,12 @@
          (== `(~'. ~a2) h))]
       [(!= a '.) (== a h) (== d t) ])))
 
-(defn evalo [in1 in2 out1 out2]
+(defn evalo [in lef1 out1 out2]
   (fresh [a d]
-    (conso a d in1)
+    (conso a d in)
     (conde
       [(== a '_)
-        (fresh [f rf cf arg rarg carg fun fbody sarg outf outf2 outarg rest]
+        (fresh [f rf cf arg rarg carg fun fbody sarg1 sarg2 outf outf2 outarg rest]
           (evalo d cf out1 outf)
           (combo f rf cf)
           (nom/fresh [x y z]
@@ -75,9 +84,9 @@
               [(== f (nom/tie x fbody)) (== fun f) (== outf2 outf)])
             (== fun (nom/tie x fbody))
             (nom/hash x arg)
-            (substo fbody arg x sarg))
+            (substo fbody arg x sarg1 sarg2))
           (evalo rf carg outf2 outarg)
           (combo arg rarg carg)
-          (appendo sarg rarg rest)
-          (evalo rest in2 outarg out2))]
-      [(doneo in1) (== in1 in2) (== out1 out2)])))
+          (== sarg2 rarg)
+          (evalo sarg1 lef1 outarg out2))]
+      [(doneo in) (== in lef1) (== out1 out2)])))
