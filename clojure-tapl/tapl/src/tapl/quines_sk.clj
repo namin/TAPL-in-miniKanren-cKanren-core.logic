@@ -64,29 +64,32 @@
        (fresh [a2]
          (conso a2 t d)
          (== `(~'. ~a2) h))]
-      [(!= a '.) (== a h) (== d t) ])))
+      [(!= a '.) (== a h) (== d t)])))
 
 (defn evalo [in lef1 out1 out2]
   (fresh [a d]
     (conso a d in)
     (conde
       [(== a '_)
-        (fresh [f rf cf arg rarg carg fun fbody sarg1 sarg2 outf outf2 outarg rest]
-          (evalo d cf out1 outf)
+        (fresh [f rf cf arg sarg rarg carg fun fbody outf1 outf2 outfo1 outfo2 outarg1 outarg2 outrest]
+          (== out1 outf1)
+          (== outf2 outarg1)
+          (== outarg2 outfo1)
+          (== outfo2 outrest)
+          (evalo d cf outf1 outf2)
           (combo f rf cf)
           (nom/fresh [x y z]
             (conde
-              [(fresh [c] (== f `(~'. ~c)) (symbolo c) (== fun (nom/tie x `(~x))) (conso c outf2 outf))]
-              [(== f 'i) (== fun (nom/tie x `(~x))) (== outf2 outf)]
-              [(== f 'k) (== fun (nom/tie x `(~(nom/tie y `(~x))))) (== outf2 outf)]
-              [(== f 's) (== fun (nom/tie x `(~(nom/tie y `(~(nom/tie z `(~'_ ~'_ ~x ~z ~'_ ~y ~z))))))) (== outf2 outf)]
-              [(== f 'v) (== fun (nom/tie x `(~'v))) (== outf2 outf)]
-              [(== f (nom/tie x fbody)) (== fun f) (== outf2 outf)])
+              [(fresh [c] (== f `(~'. ~c)) (symbolo c) (== fun (nom/tie x `(~x))) (conso c outfo2 outfo1))]
+              [(== f 'i) (== fun (nom/tie x `(~x))) (== outfo2 outfo1)]
+              [(== f 'k) (== fun (nom/tie x `(~(nom/tie y `(~x))))) (== outfo2 outfo1)]
+              [(== f 's) (== fun (nom/tie x `(~(nom/tie y `(~(nom/tie z `(~'_ ~'_ ~x ~z ~'_ ~y ~z))))))) (== outfo2 outfo1)]
+              [(== f 'v) (== fun (nom/tie x `(~'v))) (== outfo2 outfo1)]
+              [(== f (nom/tie x fbody)) (== fun f) (== outfo2 outfo1)])
             (== fun (nom/tie x fbody))
             (nom/hash x arg)
-            (substo fbody arg x sarg1 sarg2))
-          (evalo rf carg outf2 outarg)
-          (combo arg rarg carg)
-          (== sarg2 rarg)
-          (evalo sarg1 lef1 outarg out2))]
+            (evalo rf carg outarg1 outarg2)
+            (combo arg rarg carg)
+            (substo fbody arg x sarg rarg))
+          (evalo sarg lef1 outrest out2))]
       [(doneo in) (== in lef1) (== out1 out2)])))

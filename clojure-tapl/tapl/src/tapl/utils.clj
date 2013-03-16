@@ -19,3 +19,7 @@
 (defn nomo [x] (predc x nom? (reifier-for 'nom x)))
 
 (defn symbolo [x] (predc x symbol? (reifier-for 'sym x)))
+
+;;; debugging
+(defn debug-log [msg x]
+  (fn [a] (println msg (-reify a x)) a))

@@ -21,6 +21,13 @@
            (run* [q] (evalo sk-hello '(i) q ())))
         '("Hello world"))))
 
+(deftest test-dot
+  (is (= (run* [q] (fresh [lef1 out1] (evalo '(_ . i _ _ _ s . a . b _ . c i) lef1 out1 ()) (== q  [lef1 out1])))
+        '([(i) (c a b i)])))
+  (is (= (run* [q] (fresh [lef1 out1] (evalo '(_ _ _ _ s . x . y _ . z i _ _ _ s . a . b _ . c i) lef1 out1 ()) (== q [lef1 out1])))
+        '([(i) (z x y c a b)])))
+
+  )
 (deftest test-sk
   (is (= (run* [q] (fresh [lef1 out1] (evalo '(_ _ _ s k s i) lef1 out1 ()) (== q [lef1 out1])))
         '([(i) ()])))
@@ -54,19 +61,19 @@
 
 (deftest test-backwards-1
   (is (= (run 10 [q] (flatto q) (evalo q '(i) '(y o) ()))
-          ;; all boring!
-        '( (_ . y _ . o i)
-           (_ i _ . y _ . o i)
-           (_ . y _ i _ . o i)
-           (_ . y _ . o _ i i)
-           (_ i _ i _ . y _ . o i)
-           (_ i _ . y _ i _ . o i)
-           (_ . y _ i _ i _ . o i)
-           (_ i _ . y _ . o _ i i)
-           (_ . y _ i _ . o _ i i)
-           (_ . y _ . o _ i _ i i)))))
+        ;; all boring!
+        '( (_ . o _ . y i)
+           (_ . o _ . y _ i i)
+           (_ _ i . o _ . y i)
+           (_ _ . y . o i)
+           (_ . o _ _ i . y i)
+           (_ i _ . o _ . y i)
+           (_ . o _ i _ . y i)
+           (_ . o _ _ . y i i)
+           (_ _ . y . o _ i i)
+           (_ _ i . o _ . y _ i i)))))
 
 (deftest test-backwards-2
-  (is (= (run 3 [q] (fresh [i o end] (appendo '(_ _ _ s k) end q) (evalo q '(i) () ())))
+  (is (= (run 3 [q] (fresh [i o end] (flatto q) (appendo '(_ _ _ s k) end q) (evalo q '(i) () ())))
         ;; it stalls without the k                   here
         '((_ _ _ s k i i) (_ _ _ s k k i) (_ _ _ s k v i)))))
