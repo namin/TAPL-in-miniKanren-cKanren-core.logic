@@ -129,6 +129,24 @@
         [:succ [:if :true :true [:succ :false]]]))
   )
 
+(deftest test-S
+  (is (= (run* [q] (S :z q)) '([])))
+  (is (= (run* [q] (S [:s :z] q)) '([:true :false :zero])))
+  (is (= (run* [q] (S [:s [:s :z]] q))
+        '((:true :false :zero
+           [:succ :true] [:succ :false] [:succ :zero]
+           [:pred :true] [:pred :false] [:pred :zero]
+           [:iszero :true] [:iszero :false] [:iszero :zero]
+           [:if :true :true :true] [:if :true :true :false] [:if :true :true :zero]
+           [:if :true :false :true] [:if :true :false :false] [:if :true :false :zero]
+           [:if :true :zero :true] [:if :true :zero :false] [:if :true :zero :zero]
+           [:if :false :true :true] [:if :false :true :false] [:if :false :true :zero]
+           [:if :false :false :true] [:if :false :false :false] [:if :false :false :zero]
+           [:if :false :zero :true] [:if :false :zero :false] [:if :false :zero :zero]
+           [:if :zero :true :true] [:if :zero :true :false] [:if :zero :true :zero]
+           [:if :zero :false :true] [:if :zero :false :false] [:if :zero :false :zero]
+           [:if :zero :zero :true] [:if :zero :zero :false] [:if :zero :zero :zero])))))
+
 (deftest test-NV
   (is (= (run 3 [q] (NV q)) '(:zero [:succ :zero] [:succ [:succ :zero]]))))
 
